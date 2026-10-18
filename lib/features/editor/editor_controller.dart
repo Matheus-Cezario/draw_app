@@ -52,7 +52,7 @@ class EditorController extends ChangeNotifier implements ToolHost {
   late Tool _tool;
   int _activeLayerIndex = 0;
   ui.Color _color = const ui.Color(0xFFE53935);
-  double _size = 24;
+  double _size = 22;
   double _opacity = 1;
   Timer? _saveTimer;
   bool _disposed = false;
@@ -223,6 +223,13 @@ class EditorController extends ChangeNotifier implements ToolHost {
         ..layout(const ui.ParagraphConstraints(width: 4000));
       canvas.drawParagraph(paragraph, at);
     });
+  }
+
+  void rename(String newName) {
+    final trimmed = newName.trim();
+    if (trimmed.isEmpty || trimmed == _document.name) return;
+    _document.name = trimmed;
+    _changed();
   }
 
   Future<void> undo() async {

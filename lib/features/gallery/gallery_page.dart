@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/storage/project_repository.dart';
 import '../editor/editor_page.dart';
+import '../editor/rename_dialog.dart';
 import '../scan_preview/scan_preview_page.dart';
 
 /// Lists saved projects and starts new ones.
@@ -18,7 +19,12 @@ class GalleryPage extends StatefulWidget {
 class _GalleryPageState extends State<GalleryPage> {
   late Future<List<ProjectSummary>> _projects = widget.repository.list();
 
-  void _reload() => setState(() => _projects = widget.repository.list());
+  void _reload() {
+    final projects = widget.repository.list();
+    setState(() {
+      _projects = projects;
+    });
+  }
 
   Future<void> _open(String id) async {
     final doc = await widget.repository.load(id);
@@ -60,6 +66,43 @@ class _GalleryPageState extends State<GalleryPage> {
       ),
     );
     _reload();
+  }
+
+  Future<void> _showActions(ProjectSummary project) async {
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Rename'),
+              onTap: () => Navigator.pop(context, 'rename'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline),
+              title: const Text('Delete'),
+              onTap: () => Navigator.pop(context, 'delete'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (action == 'rename') {
+      final name = await askForName(
+        context,
+        title: 'Name your drawing',
+        initial: project.name,
+      );
+      if (name != null && name.trim().isNotEmpty) {
+        await widget.repository.rename(project.id, name.trim());
+        _reload();
+      }
+    } else if (action == 'delete') {
+      await _confirmDelete(project);
+    }
   }
 
   Future<void> _confirmDelete(ProjectSummary project) async {
@@ -159,7 +202,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: () => _open(p.id),
-                  onLongPress: () => _confirmDelete(p),
+                  onLongPress: () => _showActions(p),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [

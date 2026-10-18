@@ -42,3 +42,24 @@ Keeps the stroke pipeline simple and deterministic; pressure-sensitive width is 
 
 ## D12. Tests target pure logic
 The scan pipeline is pure Dart and covered by synthetic-image tests (closed shape, small gap sealed, big gap leaks, speck removal, nested shapes).
+
+## D13. Kid-first controls: fixed choices instead of sliders
+Young children struggle with precise drags. Brush size is 4 big buttons, layer opacity is 3 chips, scan tuning is chip groups, and colours are a fixed palette of 32 big dots (two rows in portrait, one in landscape, light/strong pairs per hue). The free HSV picker was removed.
+
+## D14. Size buttons only for tools that use size
+Bucket, eyedropper and move ignore brush size, so their size buttons are hidden (`toolUsesSize`) to avoid controls that do nothing.
+
+## D15. Layout follows orientation
+Colours stay on top. Portrait: tools strip below the canvas. Landscape: tools in a side rail, so the canvas keeps its height.
+
+## D16. Own colour UI instead of `flex_color_picker`
+The package's `ColorCodeField` threw "No MaterialLocalizations found" on this Flutter version. A fixed palette is also simpler for kids, so the dependency was dropped.
+
+## D17. Bundled rounded font (Fredoka, OFL) for the title
+Bundled instead of fetched at runtime so the app works offline and has no network dependency.
+
+## D18. Start screen with a self-painting picture
+A short animation (a framed scene painted piece by piece) and one big, still Play button. The button does not pulse, so it stays easy to tap.
+
+## D19. Renaming
+Tap the title in the editor, or long-press a drawing in the gallery. Names are stored in `meta.json`.

@@ -30,6 +30,17 @@ class ScanPreviewPage extends StatefulWidget {
 
 class _ScanPreviewPageState extends State<ScanPreviewPage> {
   static const _service = ScanService();
+  static const _sensitivityOptions = [
+    ('Few', 0.25),
+    ('Normal', 0.12),
+    ('Many', 0.06),
+  ];
+  static const _gapOptions = [
+    ('No', 0.0),
+    ('A little', 2.0),
+    ('Some', 4.0),
+    ('A lot', 6.0),
+  ];
 
   DecodedPicture? _picture;
   ScanResult? _result;
@@ -167,36 +178,38 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
                     children: [
                       if (result != null)
                         Text('${result.regionCount} paintable regions found'),
-                      Row(children: [
-                        const SizedBox(width: 90, child: Text('Sensitivity')),
-                        Expanded(
-                          child: Slider(
-                            min: 0.03,
-                            max: 0.4,
-                            value: _sensitivity,
-                            onChanged: (v) {
-                              setState(() => _sensitivity = v);
-                              _scheduleScan();
-                            },
-                          ),
-                        ),
-                      ]),
-                      Row(children: [
-                        const SizedBox(width: 90, child: Text('Close gaps')),
-                        Expanded(
-                          child: Slider(
-                            min: 0,
-                            max: 6,
-                            divisions: 6,
-                            label: _gap.round().toString(),
-                            value: _gap,
-                            onChanged: (v) {
-                              setState(() => _gap = v);
-                              _scheduleScan();
-                            },
-                          ),
-                        ),
-                      ]),
+                      const SizedBox(height: 8),
+                      const Text('How many lines?'),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          for (final (label, value) in _sensitivityOptions)
+                            ChoiceChip(
+                              label: Text(label),
+                              selected: _sensitivity == value,
+                              onSelected: (_) {
+                                setState(() => _sensitivity = value);
+                                _scheduleScan();
+                              },
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      const Text('Close small gaps?'),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          for (final (label, value) in _gapOptions)
+                            ChoiceChip(
+                              label: Text(label),
+                              selected: _gap == value,
+                              onSelected: (_) {
+                                setState(() => _gap = value);
+                                _scheduleScan();
+                              },
+                            ),
+                        ],
+                      ),
                       SwitchListTile(
                         dense: true,
                         title: const Text('Show regions'),
