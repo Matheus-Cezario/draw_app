@@ -5,6 +5,11 @@ import '../../core/storage/project_repository.dart';
 import '../editor/editor_page.dart';
 import '../editor/rename_dialog.dart';
 import '../scan_preview/scan_preview_page.dart';
+import 'paper_card.dart';
+import 'sketch_button.dart';
+
+/// Strong board colour the papers are pinned on.
+const Color _boardColor = Color(0xFF3DB8F0);
 
 /// Lists saved projects and starts new ones.
 class GalleryPage extends StatefulWidget {
@@ -169,62 +174,62 @@ class _GalleryPageState extends State<GalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My drawings')),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showNewSheet,
-        icon: const Icon(Icons.add),
-        label: const Text('New'),
+      backgroundColor: _boardColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: const Text(
+          'My drawings',
+          style: TextStyle(
+            fontFamily: 'Fredoka',
+            fontSize: 32,
+            color: kInk,
+            fontVariations: [FontVariation('wght', 700)],
+          ),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: SketchButton(label: 'New', onTap: _showNewSheet),
       body: FutureBuilder<List<ProjectSummary>>(
         future: _projects,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: kInk));
           }
           final projects = snapshot.data!;
           if (projects.isEmpty) {
             return const Center(
-              child: Text('Tap "New" to start drawing or import a picture.'),
+              child: Padding(
+                padding: EdgeInsets.all(32),
+                child: Text(
+                  'Tap "New" to start drawing!',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Fredoka',
+                    fontSize: 24,
+                    color: kInk,
+                    fontVariations: [FontVariation('wght', 600)],
+                  ),
+                ),
+              ),
             );
           }
           return GridView.builder(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 120),
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 220,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 0.8,
+              mainAxisSpacing: 28,
+              crossAxisSpacing: 24,
+              childAspectRatio: 0.74,
             ),
             itemCount: projects.length,
             itemBuilder: (context, i) {
               final p = projects[i];
-              return Card(
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: () => _open(p.id),
-                  onLongPress: () => _showActions(p),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Expanded(
-                        child: ColoredBox(
-                          color: Colors.white,
-                          child: p.thumbnail == null
-                              ? const SizedBox()
-                              : Image.file(
-                                  p.thumbnail!,
-                                  fit: BoxFit.contain,
-                                  key: ValueKey(p.modified),
-                                ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Text(p.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      ),
-                    ],
-                  ),
-                ),
+              return PaperCard(
+                project: p,
+                onTap: () => _open(p.id),
+                onLongPress: () => _showActions(p),
               );
             },
           );
