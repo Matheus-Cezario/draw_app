@@ -132,7 +132,7 @@ class _DocumentPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final doc = controller.document;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFFB0B0B8));
+    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF8FD3F4));
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     canvas.scale(scale);

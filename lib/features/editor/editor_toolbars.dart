@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'editor_controller.dart';
+import 'tool_icons.dart';
 
 /// Fixed palette: kids pick from big colours instead of sliders. Ordered in
 /// pairs (light on top, strong below) so a two-row bar groups similar hues.
@@ -40,7 +41,6 @@ class ColorBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.watch<EditorController>();
-    final scheme = Theme.of(context).colorScheme;
     final landscape = MediaQuery.orientationOf(context) == Orientation.landscape;
     final rows = landscape ? 1 : 2;
     const cell = 52.0;
@@ -52,23 +52,29 @@ class ColorBar extends StatelessWidget {
         child: Center(
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 120),
-            width: selected ? 46 : 38,
-            height: selected ? 46 : 38,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               color: swatch,
               shape: BoxShape.circle,
-              border: Border.all(
-                color: selected ? scheme.primary : scheme.outlineVariant,
-                width: selected ? 4 : 1.5,
-              ),
+              border: Border.all(color: kEditorInk, width: selected ? 3.5 : 2.5),
+              boxShadow: selected
+                  ? const [
+                      BoxShadow(color: Colors.white, spreadRadius: 2.5),
+                      BoxShadow(color: kEditorInk, spreadRadius: 5),
+                    ]
+                  : null,
             ),
           ),
         ),
       );
     }
 
-    return Material(
-      color: scheme.surfaceContainer,
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFFFFF3C4),
+        border: Border(bottom: BorderSide(color: kEditorInk, width: 3)),
+      ),
       child: SizedBox(
         height: cell * rows + 8,
         child: GridView.count(
@@ -85,24 +91,25 @@ class ColorBar extends StatelessWidget {
 }
 
 class _ToolInfo {
-  const _ToolInfo(this.type, this.icon, this.label);
+  const _ToolInfo(this.type, this.label);
   final ToolType type;
-  final IconData icon;
   final String label;
 }
 
 const _tools = <_ToolInfo>[
-  _ToolInfo(ToolType.brush, Icons.brush, 'Brush'),
-  _ToolInfo(ToolType.fill, Icons.format_color_fill, 'Paint'),
-  _ToolInfo(ToolType.pencil, Icons.edit, 'Pencil'),
-  _ToolInfo(ToolType.eraser, Icons.cleaning_services, 'Eraser'),
-  _ToolInfo(ToolType.eyedropper, Icons.colorize, 'Pick'),
-  _ToolInfo(ToolType.line, Icons.show_chart, 'Line'),
-  _ToolInfo(ToolType.rectangle, Icons.crop_square, 'Square'),
-  _ToolInfo(ToolType.ellipse, Icons.circle_outlined, 'Circle'),
-  _ToolInfo(ToolType.text, Icons.text_fields, 'Text'),
-  _ToolInfo(ToolType.selection, Icons.highlight_alt, 'Move'),
+  _ToolInfo(ToolType.brush, 'Brush'),
+  _ToolInfo(ToolType.fill, 'Paint'),
+  _ToolInfo(ToolType.pencil, 'Pencil'),
+  _ToolInfo(ToolType.eraser, 'Eraser'),
+  _ToolInfo(ToolType.eyedropper, 'Pick'),
+  _ToolInfo(ToolType.line, 'Line'),
+  _ToolInfo(ToolType.rectangle, 'Square'),
+  _ToolInfo(ToolType.ellipse, 'Circle'),
+  _ToolInfo(ToolType.text, 'Text'),
+  _ToolInfo(ToolType.selection, 'Move'),
 ];
+
+const Color _panelColor = Color(0xFFE6DCFF);
 
 /// Brush sizes + tools. Horizontal strip below the canvas in portrait, a
 /// vertical rail on the side in landscape.
@@ -114,16 +121,16 @@ class ToolPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.watch<EditorController>();
-    final scheme = Theme.of(context).colorScheme;
 
     final sizes = [
       if (toolUsesSize(c.toolType))
         for (final size in kSizes)
-        _SizeButton(
-          size: size,
-          selected: c.size == size,
-          onTap: () => c.setSize(size),
-        ),
+          _SizeButton(
+            size: size,
+            color: c.color,
+            selected: c.size == size,
+            onTap: () => c.setSize(size),
+          ),
     ];
     final tools = [
       for (final t in _tools)
@@ -135,25 +142,29 @@ class ToolPanel extends StatelessWidget {
     ];
 
     if (vertical) {
-      return Material(
-        color: scheme.surfaceContainer,
-        child: SizedBox(
-          width: 150,
-          child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: [
-              if (sizes.isNotEmpty) ...[
-                Wrap(alignment: WrapAlignment.center, children: sizes),
-                const Divider(),
-              ],
-              Wrap(alignment: WrapAlignment.center, children: tools),
+      return Container(
+        width: 156,
+        decoration: const BoxDecoration(
+          color: _panelColor,
+          border: Border(right: BorderSide(color: kEditorInk, width: 3)),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(8),
+          children: [
+            if (sizes.isNotEmpty) ...[
+              Wrap(alignment: WrapAlignment.center, children: sizes),
+              const SizedBox(height: 6),
             ],
-          ),
+            Wrap(alignment: WrapAlignment.center, children: tools),
+          ],
         ),
       );
     }
-    return Material(
-      color: scheme.surfaceContainer,
+    return Container(
+      decoration: const BoxDecoration(
+        color: _panelColor,
+        border: Border(top: BorderSide(color: kEditorInk, width: 3)),
+      ),
       child: SafeArea(
         top: false,
         child: Column(
@@ -165,7 +176,7 @@ class ToolPanel extends StatelessWidget {
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: sizes),
               ),
             SizedBox(
-              height: 76,
+              height: 86,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -182,39 +193,42 @@ class ToolPanel extends StatelessWidget {
 class _SizeButton extends StatelessWidget {
   const _SizeButton({
     required this.size,
+    required this.color,
     required this.selected,
     required this.onTap,
   });
 
   final double size;
+  final Color color;
   final bool selected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final dot = 8 + size / 80 * 28; // 8..36 px preview
+    final dot = 8 + size / 80 * 26; // 8..34 px preview, in the chosen colour
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 120),
         width: 48,
         height: 48,
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: selected ? scheme.primaryContainer : scheme.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: selected ? scheme.primary : scheme.outlineVariant,
-            width: selected ? 3 : 1,
-          ),
+          color: selected ? const Color(0xFFFFF3C4) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: kEditorInk, width: selected ? 3.5 : 2),
+          boxShadow: selected
+              ? const [BoxShadow(color: kEditorInk, offset: Offset(0, 3))]
+              : null,
         ),
         child: Center(
           child: Container(
             width: dot,
             height: dot,
             decoration: BoxDecoration(
-              color: scheme.onSurface,
+              color: color,
               shape: BoxShape.circle,
+              border: Border.all(color: kEditorInk, width: 2),
             ),
           ),
         ),
@@ -236,34 +250,41 @@ class _ToolButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 64,
-        height: 68,
-        margin: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: selected ? scheme.primary : scheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: scheme.outlineVariant),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              info.icon,
-              size: 30,
-              color: selected ? scheme.onPrimary : scheme.onSurface,
-            ),
-            Text(
-              info.label,
-              style: TextStyle(
-                fontSize: 11,
-                color: selected ? scheme.onPrimary : scheme.onSurface,
+      child: AnimatedScale(
+        scale: selected ? 1.08 : 1,
+        duration: const Duration(milliseconds: 120),
+        child: Container(
+          width: 66,
+          height: 74,
+          margin: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            color: toolTileColor(info.type),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: kEditorInk, width: selected ? 4 : 2.5),
+            boxShadow: [
+              BoxShadow(
+                color: kEditorInk,
+                offset: Offset(0, selected ? 5 : 2),
               ),
-            ),
-          ],
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ToolIcon(info.type, size: 40),
+              Text(
+                info.label,
+                style: const TextStyle(
+                  fontFamily: 'Fredoka',
+                  fontSize: 12,
+                  color: kEditorInk,
+                  fontVariations: [FontVariation('wght', 600)],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -12,11 +12,17 @@ class SketchButton extends StatefulWidget {
     required this.label,
     required this.onTap,
     this.color = const Color(0xFFFFD23F),
+    this.showPlus = true,
+    this.width = 170,
   });
 
   final String label;
   final VoidCallback onTap;
   final Color color;
+
+  /// Draws the little hand-drawn plus before the label (for "New").
+  final bool showPlus;
+  final double width;
 
   @override
   State<SketchButton> createState() => _SketchButtonState();
@@ -38,7 +44,7 @@ class _SketchButtonState extends State<SketchButton> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 80),
           transform: Matrix4.translationValues(0, _pressed ? 4 : 0, 0),
-          width: 170,
+          width: widget.width,
           height: 72,
           child: CustomPaint(
             painter: _SketchPainter(widget.color, _pressed),
@@ -46,8 +52,10 @@ class _SketchButtonState extends State<SketchButton> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CustomPaint(size: Size(26, 26), painter: _PlusPainter()),
-                  const SizedBox(width: 10),
+                  if (widget.showPlus) ...[
+                    const CustomPaint(size: Size(26, 26), painter: _PlusPainter()),
+                    const SizedBox(width: 10),
+                  ],
                   Text(
                     widget.label,
                     style: const TextStyle(

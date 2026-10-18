@@ -5,6 +5,7 @@ import '../../core/storage/project_repository.dart';
 import '../editor/editor_page.dart';
 import '../editor/rename_dialog.dart';
 import '../scan_preview/scan_preview_page.dart';
+import 'new_drawing_sheet.dart';
 import 'paper_card.dart';
 import 'sketch_button.dart';
 
@@ -134,41 +135,18 @@ class _GalleryPageState extends State<GalleryPage> {
     }
   }
 
-  void _showNewSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.crop_portrait),
-              title: const Text('Blank canvas'),
-              onTap: () {
-                Navigator.pop(context);
-                _newBlank();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_library_outlined),
-              title: const Text('Colour a picture from the gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                _importPicture(ImageSource.gallery);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_camera_outlined),
-              title: const Text('Colour a photo of a drawing'),
-              onTap: () {
-                Navigator.pop(context);
-                _importPicture(ImageSource.camera);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+  Future<void> _showNewSheet() async {
+    final choice = await showNewDrawingSheet(context);
+    switch (choice) {
+      case NewChoice.blank:
+        await _newBlank();
+      case NewChoice.gallery:
+        await _importPicture(ImageSource.gallery);
+      case NewChoice.camera:
+        await _importPicture(ImageSource.camera);
+      case null:
+        break;
+    }
   }
 
   @override

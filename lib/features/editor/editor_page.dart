@@ -11,6 +11,7 @@ import 'canvas_view.dart';
 import 'editor_controller.dart';
 import 'editor_toolbars.dart';
 import 'layers_sheet.dart';
+import 'tool_icons.dart';
 import 'rename_dialog.dart';
 
 /// Hosts the [EditorController] and lays out the editor chrome.
@@ -120,50 +121,131 @@ class _EditorScaffoldState extends State<_EditorScaffold> {
       },
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color(0xFFFFD23F),
+          surfaceTintColor: Colors.transparent,
+          shape: const Border(bottom: BorderSide(color: kEditorInk, width: 3)),
+          toolbarHeight: landscape ? 52 : 64,
+          leadingWidth: 54,
+          leading: Center(
+            child: _RoundAction(
+              icon: Icons.arrow_back_rounded,
+              color: const Color(0xFF1E88E5),
+              tooltip: 'Back',
+              onTap: () => Navigator.of(context).maybePop(),
+            ),
+          ),
+          titleSpacing: 4,
           title: InkWell(
             borderRadius: BorderRadius.circular(8),
             onTap: () => _rename(c),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Flexible(child: Text(c.name, overflow: TextOverflow.ellipsis)),
+                Flexible(
+                  child: Text(
+                    c.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'Fredoka',
+                      fontSize: 22,
+                      color: kEditorInk,
+                      fontVariations: [FontVariation('wght', 700)],
+                    ),
+                  ),
+                ),
                 const SizedBox(width: 6),
-                const Icon(Icons.edit, size: 16),
+                const Icon(Icons.edit_rounded, size: 18, color: kEditorInk),
               ],
             ),
           ),
-          toolbarHeight: landscape ? 48 : kToolbarHeight,
           actions: [
-            IconButton(
+            _RoundAction(
+              icon: Icons.undo_rounded,
+              color: const Color(0xFFFF7043),
               tooltip: 'Undo',
-              onPressed: c.canUndo ? c.undo : null,
-              icon: const Icon(Icons.undo),
+              onTap: c.canUndo ? c.undo : null,
             ),
-            IconButton(
+            _RoundAction(
+              icon: Icons.redo_rounded,
+              color: const Color(0xFFFF7043),
               tooltip: 'Redo',
-              onPressed: c.canRedo ? c.redo : null,
-              icon: const Icon(Icons.redo),
+              onTap: c.canRedo ? c.redo : null,
             ),
-            IconButton(
+            _RoundAction(
+              icon: Icons.layers_rounded,
+              color: const Color(0xFF8E24AA),
               tooltip: 'Layers',
-              onPressed: () => showModalBottomSheet(
+              onTap: () => showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
+                backgroundColor: const Color(0xFFFFF3C4),
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  side: BorderSide(color: kEditorInk, width: 3),
+                ),
                 builder: (_) => ChangeNotifierProvider.value(
                   value: c,
                   child: const LayersSheet(),
                 ),
               ),
-              icon: const Icon(Icons.layers),
             ),
-            IconButton(
+            _RoundAction(
+              icon: Icons.ios_share_rounded,
+              color: const Color(0xFF43A047),
               tooltip: 'Share',
-              onPressed: _export,
-              icon: const Icon(Icons.ios_share),
+              onTap: _export,
             ),
+            const SizedBox(width: 6),
           ],
         ),
         body: SafeArea(top: false, child: body),
+      ),
+    );
+  }
+}
+
+/// Round, sticker-like action button for the top bar. Greyed out when
+/// [onTap] is null.
+class _RoundAction extends StatelessWidget {
+  const _RoundAction({
+    required this.icon,
+    required this.color,
+    required this.tooltip,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String tooltip;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: Tooltip(
+        message: tooltip,
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: 37,
+            height: 37,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: enabled ? color : const Color(0xFFD9D4C4),
+              border: Border.all(color: kEditorInk, width: 3),
+              boxShadow: enabled
+                  ? const [BoxShadow(color: kEditorInk, offset: Offset(0, 3))]
+                  : null,
+            ),
+            child: Icon(
+              icon,
+              size: 21,
+              color: enabled ? Colors.white : const Color(0xFF8B8676),
+            ),
+          ),
+        ),
       ),
     );
   }

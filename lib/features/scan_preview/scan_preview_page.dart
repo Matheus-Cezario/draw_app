@@ -8,6 +8,8 @@ import '../../core/raster/raster.dart';
 import '../../core/scan/scan_pipeline.dart';
 import '../../core/scan/scan_service.dart';
 import '../../core/storage/project_repository.dart';
+import '../../core/ui/kid_ui.dart';
+import '../gallery/sketch_button.dart';
 import '../editor/editor_page.dart';
 
 /// Lets the user tune the scan and see what the bucket will treat as lines
@@ -47,8 +49,8 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
   ui.Image? _linesImage;
   ui.Image? _regionsImage;
   double _sensitivity = const ScanParams().sensitivity;
-  double _gap = const ScanParams().gapClosing.toDouble();
-  bool _showRegions = false;
+  double _gap = 0; // "No": gaps are only closed when asked for
+  bool _showRegions = true;
   bool _busy = true;
   String? _error;
   Timer? _debounce;
@@ -133,94 +135,175 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
     );
   }
 
+  Widget _preview() {
+    final image = _showRegions ? _regionsImage : _linesImage;
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        if (image != null)
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: AspectRatio(
+              aspectRatio: image.width / image.height,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: kKidInk, width: 3),
+                  boxShadow: const [
+                    BoxShadow(color: Color(0x55000000), blurRadius: 10, offset: Offset(3, 6)),
+                  ],
+                ),
+                child: RawImage(image: image, fit: BoxFit.contain),
+              ),
+            ),
+          ),
+        if (_busy)
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(color: kKidInk, width: 3),
+            ),
+            child: const CircularProgressIndicator(color: Color(0xFFF2543D), strokeWidth: 6),
+          ),
+      ],
+    );
+  }
+
+  Widget _panel(bool canUse) {
+    final result = _result;
+    return Container(
+      decoration: const BoxDecoration(
+        color: kKidCream,
+        border: Border(
+          top: BorderSide(color: kKidInk, width: 3),
+          left: BorderSide(color: kKidInk, width: 3),
+        ),
+        borderRadius: BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Text(
+                  result == null ? 'Looking for lines...' : '${result.regionCount} places to paint!',
+                  style: kidText(22, weight: 700),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text('How many lines?', style: kidText(16, weight: 600)),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  for (final (label, value) in _sensitivityOptions)
+                    StickerChoice(
+                      label: label,
+                      selected: _sensitivity == value,
+                      color: const Color(0xFFCE93D8),
+                      onTap: () {
+                        setState(() => _sensitivity = value);
+                        _scheduleScan();
+                      },
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text('Close small gaps?', style: kidText(16, weight: 600)),
+              const SizedBox(height: 6),
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  for (final (label, value) in _gapOptions)
+                    StickerChoice(
+                      label: label,
+                      selected: _gap == value,
+                      color: const Color(0xFF80DEEA),
+                      onTap: () {
+                        setState(() => _gap = value);
+                        _scheduleScan();
+                      },
+                    ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              StickerChoice(
+                label: _showRegions ? 'Showing colours' : 'Show colours',
+                icon: Icons.palette_rounded,
+                selected: _showRegions,
+                color: const Color(0xFFFFAB91),
+                onTap: () => setState(() => _showRegions = !_showRegions),
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: Opacity(
+                  opacity: canUse ? 1 : 0.5,
+                  child: SketchButton(
+                    label: "Let's go!",
+                    showPlus: false,
+                    width: 230,
+                    color: const Color(0xFF66D17A),
+                    onTap: canUse ? _create : () {},
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final result = _result;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Scan drawing'),
-        actions: [
-          TextButton(
-            onPressed: result == null || _busy ? null : _create,
-            child: const Text('Use'),
-          ),
+    final landscape = MediaQuery.orientationOf(context) == Orientation.landscape;
+    final canUse = _result != null && !_busy;
+
+    final Widget body;
+    if (_error != null) {
+      body = Center(child: Text(_error!, style: kidText(22, weight: 700)));
+    } else if (landscape) {
+      body = Row(
+        children: [
+          Expanded(child: _preview()),
+          SizedBox(width: 360, child: _panel(canUse)),
         ],
+      );
+    } else {
+      body = Column(
+        children: [
+          Expanded(child: _preview()),
+          _panel(canUse),
+        ],
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: kKidBoard,
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFFD23F),
+        surfaceTintColor: Colors.transparent,
+        shape: const Border(bottom: BorderSide(color: kKidInk, width: 3)),
+        leadingWidth: 60,
+        leading: Center(
+          child: RoundSticker(
+            icon: Icons.arrow_back_rounded,
+            color: const Color(0xFF1E88E5),
+            tooltip: 'Back',
+            onTap: () => Navigator.of(context).maybePop(),
+          ),
+        ),
+        title: Text('Check your picture', style: kidText(22, weight: 700)),
       ),
-      body: _error != null
-          ? Center(child: Text(_error!))
-          : Column(
-              children: [
-                Expanded(
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      if (_linesImage != null)
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: AspectRatio(
-                            aspectRatio: _linesImage!.width / _linesImage!.height,
-                            child: ColoredBox(
-                              color: Colors.white,
-                              child: RawImage(
-                                image: _showRegions ? _regionsImage : _linesImage,
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                          ),
-                        ),
-                      if (_busy) const CircularProgressIndicator(),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      if (result != null)
-                        Text('${result.regionCount} paintable regions found'),
-                      const SizedBox(height: 8),
-                      const Text('How many lines?'),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          for (final (label, value) in _sensitivityOptions)
-                            ChoiceChip(
-                              label: Text(label),
-                              selected: _sensitivity == value,
-                              onSelected: (_) {
-                                setState(() => _sensitivity = value);
-                                _scheduleScan();
-                              },
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      const Text('Close small gaps?'),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          for (final (label, value) in _gapOptions)
-                            ChoiceChip(
-                              label: Text(label),
-                              selected: _gap == value,
-                              onSelected: (_) {
-                                setState(() => _gap = value);
-                                _scheduleScan();
-                              },
-                            ),
-                        ],
-                      ),
-                      SwitchListTile(
-                        dense: true,
-                        title: const Text('Show regions'),
-                        value: _showRegions,
-                        onChanged: (v) => setState(() => _showRegions = v),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+      body: body,
     );
   }
 }
