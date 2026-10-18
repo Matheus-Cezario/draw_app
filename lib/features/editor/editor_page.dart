@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -128,6 +127,126 @@ class _EditorScaffoldState extends State<_EditorScaffold> {
   }
 }
 
+/// Opens a small hue / saturation / brightness picker.
+Future<void> _pickColor(BuildContext context, EditorController c) async {
+  final result = await showDialog<Color>(
+    context: context,
+    builder: (_) => _ColorDialog(initial: c.color),
+  );
+  if (result != null) c.setColor(result);
+}
+
+class _ColorDialog extends StatefulWidget {
+  const _ColorDialog({required this.initial});
+
+  final Color initial;
+
+  @override
+  State<_ColorDialog> createState() => _ColorDialogState();
+}
+
+class _ColorDialogState extends State<_ColorDialog> {
+  late HSVColor _hsv = HSVColor.fromColor(widget.initial);
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _hsv.toColor();
+    return AlertDialog(
+      title: const Text('Colour'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _gradientSlider(
+            label: 'Hue',
+            value: _hsv.hue,
+            max: 360,
+            colors: [
+              for (var h = 0; h <= 360; h += 60)
+                HSVColor.fromAHSV(1, h.toDouble(), 1, 1).toColor(),
+            ],
+            onChanged: (v) => setState(() => _hsv = _hsv.withHue(v)),
+          ),
+          _gradientSlider(
+            label: 'Saturation',
+            value: _hsv.saturation,
+            max: 1,
+            colors: [
+              _hsv.withSaturation(0).toColor(),
+              _hsv.withSaturation(1).toColor(),
+            ],
+            onChanged: (v) => setState(() => _hsv = _hsv.withSaturation(v)),
+          ),
+          _gradientSlider(
+            label: 'Brightness',
+            value: _hsv.value,
+            max: 1,
+            colors: [
+              _hsv.withValue(0).toColor(),
+              _hsv.withValue(1).toColor(),
+            ],
+            onChanged: (v) => setState(() => _hsv = _hsv.withValue(v)),
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, color),
+          child: const Text('OK'),
+        ),
+      ],
+    );
+  }
+
+  Widget _gradientSlider({
+    required String label,
+    required double value,
+    required double max,
+    required List<Color> colors,
+    required ValueChanged<double> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: Theme.of(context).textTheme.labelMedium),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              height: 10,
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(5),
+                gradient: LinearGradient(colors: colors),
+              ),
+            ),
+            SliderTheme(
+              data: SliderTheme.of(context).copyWith(
+                trackHeight: 0,
+                activeTrackColor: Colors.transparent,
+                inactiveTrackColor: Colors.transparent,
+              ),
+              child: Slider(value: value.clamp(0, max), max: max, onChanged: onChanged),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
 class _BottomBar extends StatelessWidget {
   const _BottomBar();
 
@@ -144,6 +263,23 @@ class _BottomBar extends StatelessWidget {
     (ToolType.selection, Icons.highlight_alt, 'Select & move'),
   ];
 
+  static const _palette = <Color>[
+    Color(0xFF000000),
+    Color(0xFF616161),
+    Color(0xFFFFFFFF),
+    Color(0xFFE53935),
+    Color(0xFFFB8C00),
+    Color(0xFFFDD835),
+    Color(0xFF7CB342),
+    Color(0xFF00897B),
+    Color(0xFF1E88E5),
+    Color(0xFF3949AB),
+    Color(0xFF8E24AA),
+    Color(0xFFEC407A),
+    Color(0xFF6D4C41),
+    Color(0xFFFFCCBC),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final c = context.watch<EditorController>();
@@ -155,29 +291,42 @@ class _BottomBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            SizedBox(
+              height: 44,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                children: [
+                  for (final swatch in _palette)
+                    GestureDetector(
+                      onTap: () => c.setColor(swatch),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        margin: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: swatch,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: swatch == c.color
+                                ? scheme.primary
+                                : scheme.outlineVariant,
+                            width: swatch == c.color ? 3 : 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(
                 children: [
-                  InkWell(
-                    onTap: () async {
-                      final picked = await showColorPickerDialog(
-                        context,
-                        c.color,
-                        title: const Text('Colour'),
-                        enableOpacity: false,
-                      );
-                      c.setColor(picked);
-                    },
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: c.color,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: scheme.outline, width: 2),
-                      ),
-                    ),
+                  IconButton(
+                    tooltip: 'More colours',
+                    onPressed: () => _pickColor(context, c),
+                    icon: const Icon(Icons.palette_outlined),
                   ),
                   const SizedBox(width: 8),
                   const Icon(Icons.line_weight, size: 18),

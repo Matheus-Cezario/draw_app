@@ -39,8 +39,9 @@ dependencies:
   path_provider: ^2.1.6
   share_plus: ^13.3.1
   provider: ^6.1.5+1
-  flex_color_picker: ^4.0.0
   uuid: ^4.6.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
