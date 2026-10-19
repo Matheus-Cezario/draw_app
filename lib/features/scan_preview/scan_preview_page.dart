@@ -5,11 +5,13 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../../core/raster/raster.dart';
+import '../../core/scan/crop.dart';
 import '../../core/scan/scan_pipeline.dart';
 import '../../core/scan/scan_service.dart';
 import '../../core/storage/project_repository.dart';
 import '../../core/ui/kid_ui.dart';
 import '../gallery/sketch_button.dart';
+import 'crop_page.dart';
 import '../editor/editor_page.dart';
 
 /// Lets the user tune the scan and see what the bucket will treat as lines
@@ -44,7 +46,9 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
     ('A lot', 6.0),
   ];
 
-  DecodedPicture? _picture;
+  DecodedPicture? _original; // as decoded, never cropped
+  DecodedPicture? _picture; // the part that is scanned
+  CropRect _crop = CropRect.full;
   ScanResult? _result;
   ui.Image? _linesImage;
   ui.Image? _regionsImage;
@@ -70,11 +74,29 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
 
   Future<void> _load() async {
     try {
-      _picture = await _service.decode(widget.encoded);
+      _original = await _service.decode(widget.encoded);
+      _picture = _original;
       await _scan();
     } catch (e) {
       if (mounted) setState(() => _error = 'Could not read this image.');
     }
+  }
+
+  Future<void> _openCrop() async {
+    final original = _original;
+    if (original == null || _busy) return;
+    final result = await Navigator.push<CropRect>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CropPage(picture: original, initial: _crop),
+      ),
+    );
+    if (result == null || !mounted) return;
+    setState(() {
+      _crop = result;
+      _picture = cropPicture(original, result);
+    });
+    await _scan();
   }
 
   void _scheduleScan() {
@@ -235,12 +257,25 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
                 ],
               ),
               const SizedBox(height: 12),
-              StickerChoice(
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: [
+                  StickerChoice(
+                    label: _crop.isFull ? 'Cut picture' : 'Picture cut',
+                    icon: Icons.crop_rounded,
+                    selected: !_crop.isFull,
+                    color: const Color(0xFFA5D6A7),
+                    onTap: _openCrop,
+                  ),
+                  StickerChoice(
                 label: _showRegions ? 'Showing colours' : 'Show colours',
                 icon: Icons.palette_rounded,
                 selected: _showRegions,
                 color: const Color(0xFFFFAB91),
                 onTap: () => setState(() => _showRegions = !_showRegions),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               Center(

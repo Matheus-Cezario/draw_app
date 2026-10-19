@@ -63,3 +63,6 @@ A short animation (a framed scene painted piece by piece) and one big, still Pla
 
 ## D19. Renaming
 Tap the title in the editor, or long-press a drawing in the gallery. Names are stored in `meta.json`.
+
+## D20. Cropping is our own screen, applied before the scan
+A native cropper package would need per-platform setup and would not match the playful look. `CropPage` lets the child drag corners, sides or the whole box; it returns a normalised `CropRect`. The crop is always applied to the *original* decoded picture (never to an already cropped one), so the child can re-crop or go back to the whole picture without losing quality. Cropping happens before `scanLineArt`, so the line layer and the region map have the cropped size. `cropPicture` is pure Dart and unit tested.
