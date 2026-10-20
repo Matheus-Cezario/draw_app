@@ -4,15 +4,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/storage/project_repository.dart';
 import 'features/start/start_page.dart';
 
-class DrawApp extends StatelessWidget {
-  const DrawApp({super.key, required this.repository});
+class ColorFunApp extends StatelessWidget {
+  const ColorFunApp({super.key, required this.repository});
 
   final ProjectRepository repository;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'DrawApp',
+      title: 'Color Fun',
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       supportedLocales: const [Locale('en'), Locale('pt')],
       debugShowCheckedModeBanner: false,

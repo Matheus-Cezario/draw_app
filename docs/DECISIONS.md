@@ -66,3 +66,16 @@ Tap the title in the editor, or long-press a drawing in the gallery. Names are s
 
 ## D20. Cropping is our own screen, applied before the scan
 A native cropper package would need per-platform setup and would not match the playful look. `CropPage` lets the child drag corners, sides or the whole box; it returns a normalised `CropRect`. The crop is always applied to the *original* decoded picture (never to an already cropped one), so the child can re-crop or go back to the whole picture without losing quality. Cropping happens before `scanLineArt`, so the line layer and the region map have the cropped size. `cropPicture` is pure Dart and unit tested.
+
+## D21. App name: Color Fun
+Short, easy for children to say and spell, and it works in English and Portuguese. Changed in the app title, the start screen, the iOS display name, the Android label and the web manifest. The bundle id (`com.example.drawApp`) is still the Flutter default and must be replaced before publishing.
+
+## D22. Ready-made drawings are vectors drawn in code
+20 pages in 5 categories (animals, cars, motorbikes, houses, plants) live in `lib/core/library/`. They are drawn with a tiny `Pen` helper (100 x 100 units; each shape is filled white, then outlined, so later shapes hide earlier lines). Why code and not image files:
+- Outlines are *closed by construction*, which is exactly what the region-based bucket needs; a test checks every drawing scans into closed regions and does not leak.
+- No binary assets: the repo stays small, drawings are crisp at any size, and the same drawing paints the gallery thumbnails live.
+- A page is rasterised (1200 px) and goes through the very same scan as a photo, so there is one code path.
+Adding a page means writing one function and one catalog line.
+
+## D23. Categories on one screen
+The "Colouring book" screen shows one row per category (coloured header, horizontally scrolling paper cards) instead of tabs, so a child sees everything by scrolling in one direction and each category is recognisable by colour and icon.

@@ -98,7 +98,7 @@ class _StartPageState extends State<StartPage> with SingleTickerProviderStateMix
 class _TitleCloud extends StatelessWidget {
   const _TitleCloud();
 
-  static const _letters = 'DrawApp';
+  static const _letters = 'Color Fun';
   static const _colors = [
     Color(0xFFE0452F),
     Color(0xFFD06A00),
@@ -124,14 +124,14 @@ class _TitleCloud extends StatelessWidget {
                 for (var i = 0; i < _letters.length; i++)
                   TextSpan(
                     text: _letters[i],
-                    style: TextStyle(color: _colors[i]),
+                    style: TextStyle(color: _colors[i % _colors.length]),
                   ),
               ],
             ),
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontFamily: 'Fredoka',
-              fontSize: 90,
+              fontSize: 80,
               height: 1,
               letterSpacing: 1,
               fontVariations: [FontVariation('wght', 700)],

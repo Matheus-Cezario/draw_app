@@ -144,7 +144,10 @@ class _DocumentPainter extends CustomPainter {
       canvas,
       doc,
       overLayer: controller.activeLayer,
-      paintOverLayer: controller.tool.paintLive,
+      paintOverLayer: (c) {
+        controller.tool.paintLive(c);
+        controller.paintFillSpread(c, controller.activeLayer);
+      },
     );
     controller.tool.paintOverlay(canvas, scale);
     canvas.restore();

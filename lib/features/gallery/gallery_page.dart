@@ -5,6 +5,7 @@ import '../../core/storage/project_repository.dart';
 import '../editor/editor_page.dart';
 import '../editor/rename_dialog.dart';
 import '../scan_preview/scan_preview_page.dart';
+import '../library/library_page.dart';
 import 'new_drawing_sheet.dart';
 import 'paper_card.dart';
 import 'sketch_button.dart';
@@ -137,7 +138,14 @@ class _GalleryPageState extends State<GalleryPage> {
 
   Future<void> _showNewSheet() async {
     final choice = await showNewDrawingSheet(context);
+    if (!mounted) return;
     switch (choice) {
+      case NewChoice.book:
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => LibraryPage(repository: widget.repository)),
+        );
+        _reload();
       case NewChoice.blank:
         await _newBlank();
       case NewChoice.gallery:

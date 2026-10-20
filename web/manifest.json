@@ -1,6 +1,6 @@
 {
-    "name": "draw_app",
-    "short_name": "draw_app",
+    "name": "Color Fun",
+    "short_name": "Color Fun",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

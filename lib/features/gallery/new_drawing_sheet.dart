@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/ui/kid_ui.dart';
 
-enum NewChoice { blank, gallery, camera }
+enum NewChoice { book, blank, gallery, camera }
 
 /// Asks how to start a new drawing. Returns null when dismissed.
 Future<NewChoice?> showNewDrawingSheet(BuildContext context) {
@@ -28,6 +28,8 @@ Future<NewChoice?> showNewDrawingSheet(BuildContext context) {
             const SizedBox(height: 4),
             Text('What do you want to colour?', style: kidText(16, weight: 500)),
             const SizedBox(height: 16),
+            _BookTile(onTap: () => Navigator.pop(context, NewChoice.book)),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -63,6 +65,45 @@ Future<NewChoice?> showNewDrawingSheet(BuildContext context) {
       ),
     ),
   );
+}
+
+/// Wide tile that opens the ready-made colouring book.
+class _BookTile extends StatelessWidget {
+  const _BookTile({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFC8E6C9),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: kKidInk, width: 3),
+          boxShadow: const [BoxShadow(color: kKidInk, offset: Offset(0, 5))],
+        ),
+        child: Row(
+          children: [
+            CustomPaint(size: const Size(64, 64), painter: const _BookPainter()),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Colouring book', style: kidText(22, weight: 700)),
+                  Text('Animals, cars, houses and more!', style: kidText(14, weight: 500)),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, size: 34, color: kKidInk),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _OptionTile extends StatelessWidget {
@@ -218,4 +259,46 @@ class _CameraPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_CameraPainter old) => false;
+}
+
+class _BookPainter extends CustomPainter {
+  const _BookPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Open book: two pages, a spine, a drawn star and rainbow stripes.
+    final left = Path()
+      ..moveTo(32, 16)
+      ..quadraticBezierTo(18, 8, 4, 14)
+      ..lineTo(4, 54)
+      ..quadraticBezierTo(18, 48, 32, 56)
+      ..close();
+    final right = Path()
+      ..moveTo(32, 16)
+      ..quadraticBezierTo(46, 8, 60, 14)
+      ..lineTo(60, 54)
+      ..quadraticBezierTo(46, 48, 32, 56)
+      ..close();
+    _shape(canvas, left, Colors.white);
+    _shape(canvas, right, Colors.white);
+    final stripe = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.4
+      ..strokeCap = StrokeCap.round;
+    const colors = [Color(0xFFF26B5B), Color(0xFFFFD23F), Color(0xFF42A5F5)];
+    for (var i = 0; i < 3; i++) {
+      canvas.drawLine(Offset(40, 24.0 + i * 7), Offset(55, 22.0 + i * 7), stripe..color = colors[i]);
+    }
+    canvas.drawCircle(const Offset(18, 30), 6, Paint()..color = const Color(0xFFFFD23F));
+    canvas.drawCircle(const Offset(18, 30), 6, _ink(2.5));
+    canvas.drawPath(
+      Path()
+        ..moveTo(10, 44)
+        ..quadraticBezierTo(18, 38, 26, 44),
+      _ink(2.5),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_BookPainter old) => false;
 }

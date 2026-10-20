@@ -5,5 +5,5 @@ import 'core/storage/project_repository.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(DrawApp(repository: ProjectRepository()));
+  runApp(ColorFunApp(repository: ProjectRepository()));
 }

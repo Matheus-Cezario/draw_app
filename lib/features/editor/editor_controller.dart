@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:flutter/animation.dart' show Curves;
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -91,6 +92,7 @@ class EditorController extends ChangeNotifier implements ToolHost {
 
   @override
   Future<void> commitLayer(Layer layer, void Function(ui.Canvas) paint) async {
+    _finishSpread();
     final before = layer.image;
     final after = await composeImage(
       before,
@@ -137,7 +139,73 @@ class EditorController extends ChangeNotifier implements ToolHost {
     final before = layer.image;
     final after = await imageFromRgba(bytes, w, h);
     _history.push(HistoryEntry(layerId: layer.id, before: before, after: after));
-    _setLayerImage(layer, after);
+    await _spreadFill(layer, after, point);
+  }
+
+  // ---- Fill animation ----------------------------------------------------
+  //
+  // The new image only differs from the old one inside the filled region, so
+  // revealing it through a growing circle makes the colour spread outwards
+  // from the tap and stay inside the lines.
+
+  static const _spreadDuration = Duration(milliseconds: 600);
+  Timer? _spreadTimer;
+  Completer<void>? _spreadDone;
+  Layer? _spreadLayer;
+  ui.Image? _spreadImage;
+  ui.Offset _spreadOrigin = ui.Offset.zero;
+  double _spreadRadius = 0;
+  double _spreadProgress = 0;
+
+  Future<void> _spreadFill(Layer layer, ui.Image after, ui.Offset origin) {
+    _finishSpread();
+    final w = _document.width.toDouble(), h = _document.height.toDouble();
+    _spreadLayer = layer;
+    _spreadImage = after;
+    _spreadOrigin = origin;
+    _spreadRadius = [
+      origin.distance,
+      (origin - ui.Offset(w, 0)).distance,
+      (origin - ui.Offset(0, h)).distance,
+      (origin - ui.Offset(w, h)).distance,
+    ].reduce((a, b) => a > b ? a : b);
+    _spreadProgress = 0;
+    final watch = Stopwatch()..start();
+    final done = _spreadDone = Completer<void>();
+    _spreadTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+      final t = watch.elapsedMilliseconds / _spreadDuration.inMilliseconds;
+      if (t >= 1 || _disposed) {
+        _finishSpread();
+      } else {
+        _spreadProgress = Curves.easeOut.transform(t);
+        requestRepaint();
+      }
+    });
+    return done.future;
+  }
+
+  void _finishSpread() {
+    _spreadTimer?.cancel();
+    _spreadTimer = null;
+    final layer = _spreadLayer, image = _spreadImage;
+    _spreadLayer = null;
+    _spreadImage = null;
+    if (layer != null && image != null) _setLayerImage(layer, image);
+    final done = _spreadDone;
+    _spreadDone = null;
+    if (done != null && !done.isCompleted) done.complete();
+  }
+
+  /// Painted on top of the active layer while a fill is spreading.
+  void paintFillSpread(ui.Canvas canvas, Layer layer) {
+    final image = _spreadImage;
+    if (image == null || !identical(layer, _spreadLayer)) return;
+    canvas.save();
+    canvas.clipPath(ui.Path()
+      ..addOval(ui.Rect.fromCircle(
+          center: _spreadOrigin, radius: _spreadRadius * _spreadProgress)));
+    canvas.drawImage(image, ui.Offset.zero, ui.Paint()..blendMode = ui.BlendMode.src);
+    canvas.restore();
   }
 
   // ---- State read by the UI --------------------------------------------
@@ -233,6 +301,7 @@ class EditorController extends ChangeNotifier implements ToolHost {
   }
 
   Future<void> undo() async {
+    _finishSpread();
     await _tool.finish();
     final entry = _history.popUndo();
     if (entry == null) return;
@@ -240,6 +309,7 @@ class EditorController extends ChangeNotifier implements ToolHost {
   }
 
   Future<void> redo() async {
+    _finishSpread();
     final entry = _history.popRedo();
     if (entry == null) return;
     _applyEntry(entry, entry.after);
@@ -247,12 +317,14 @@ class EditorController extends ChangeNotifier implements ToolHost {
 
   /// Flattened PNG of the whole drawing for export.
   Future<Uint8List> exportPng() async {
+    _finishSpread();
     await _tool.finish();
     return Uint8List.fromList(await flattenedPng(_document));
   }
 
   Future<void> saveNow() async {
     _saveTimer?.cancel();
+    _finishSpread();
     await _tool.finish();
     await _repository.save(_document);
   }
@@ -296,6 +368,7 @@ class EditorController extends ChangeNotifier implements ToolHost {
   @override
   void dispose() {
     _disposed = true;
+    _spreadTimer?.cancel();
     _saveTimer?.cancel();
     repaint.dispose();
     super.dispose();
