@@ -1,4 +1,4 @@
-package com.example.draw_app
+package com.mcezario.colorfun
 
 import io.flutter.embedding.android.FlutterActivity
 
