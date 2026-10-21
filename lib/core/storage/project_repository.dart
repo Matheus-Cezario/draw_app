@@ -22,7 +22,9 @@ class ProjectSummary {
   final String id;
   final String name;
   final DateTime modified;
-  final File? thumbnail;
+  /// PNG bytes of the preview. Bytes (not a file path) so a re-saved drawing
+  /// can never be shown from a stale image cache entry.
+  final Uint8List? thumbnail;
 }
 
 /// Stores each project as a folder on disk (decision D9):
@@ -54,7 +56,7 @@ class ProjectRepository {
           id: json['id'] as String,
           name: json['name'] as String,
           modified: DateTime.parse(json['modified'] as String),
-          thumbnail: await thumb.exists() ? thumb : null,
+          thumbnail: await thumb.exists() ? await thumb.readAsBytes() : null,
         ));
       } catch (_) {
         // Skip unreadable projects instead of breaking the whole gallery.

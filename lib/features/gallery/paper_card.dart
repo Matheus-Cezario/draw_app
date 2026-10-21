@@ -57,10 +57,10 @@ class PaperCard extends StatelessWidget {
                           ),
                           child: project.thumbnail == null
                               ? const SizedBox()
-                              : Image.file(
+                              : Image.memory(
                                   project.thumbnail!,
                                   fit: BoxFit.contain,
-                                  key: ValueKey(project.modified),
+                                  gaplessPlayback: true,
                                 ),
                         ),
                       ),

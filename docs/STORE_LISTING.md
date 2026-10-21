@@ -83,3 +83,23 @@ PRIVADO E SEGURO
 Sem anúncios, sem contas, sem rastreamento e sem precisar de internet. Seus desenhos e fotos nunca saem do aparelho.
 
 Baixe o Color Fun e vamos nos divertir!
+
+## Release notes 1.0.0 (limit 500 characters per language)
+
+**English (en-US):**
+Welcome to Color Fun, our very first version!
+- Ready-made coloring pages: animals, cars, motorbikes, houses and plants
+- Paint bucket where the color spreads from your finger
+- Scan your own drawing from a photo and color it
+- Brush, pencil, eraser, shapes, text, layers and undo
+- Your drawings saved on paper cards with animal magnets
+No ads. No internet needed. Have fun!
+
+**Português (pt-BR):**
+Bem-vindo ao Color Fun, a nossa primeira versão!
+- Desenhos prontos para colorir: animais, carros, motos, casas e plantas
+- Balde de tinta em que a cor se espalha a partir do seu dedo
+- Escaneie seu próprio desenho por foto e pinte
+- Pincel, lápis, borracha, formas, texto, camadas e desfazer
+- Seus desenhos salvos em folhas de papel com ímãs de bichinhos
+Sem anúncios. Sem precisar de internet. Divirta-se!
