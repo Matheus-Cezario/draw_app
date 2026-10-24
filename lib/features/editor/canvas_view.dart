@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/raster/compositor.dart';
 import 'editor_controller.dart';
+import '../../core/ui/app_colors.dart';
 
 /// Draws the document and turns pointer events into tool calls.
 ///
@@ -132,7 +133,7 @@ class _DocumentPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final doc = controller.document;
-    canvas.drawRect(Offset.zero & size, Paint()..color = const Color(0xFF8FD3F4));
+    canvas.drawRect(Offset.zero & size, Paint()..color = AppColors.canvasBackdrop);
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
     canvas.scale(scale);

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/storage/project_repository.dart';
 import 'animal_magnet.dart';
+import '../../core/ui/app_colors.dart';
 
-const Color kInk = Color(0xFF2B2350);
 
 /// A drawing shown as a sheet of paper held to the board by an animal magnet.
 /// Every sheet has its own tilt and animal, picked from the project id.
@@ -13,11 +13,13 @@ class PaperCard extends StatelessWidget {
     required this.project,
     required this.onTap,
     required this.onLongPress,
+    required this.onDelete,
   });
 
   final ProjectSummary project;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +36,11 @@ class PaperCard extends StatelessWidget {
               top: 22,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFFEF9),
+                  color: AppColors.paper,
                   borderRadius: BorderRadius.circular(3),
                   boxShadow: const [
                     BoxShadow(
-                      color: Color(0x40000000),
+                      color: AppColors.shadow,
                       blurRadius: 8,
                       offset: Offset(2, 5),
                     ),
@@ -53,7 +55,7 @@ class PaperCard extends StatelessWidget {
                         child: DecoratedBox(
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            border: Border.all(color: const Color(0x1F000000)),
+                            border: Border.all(color: AppColors.hairline),
                           ),
                           child: project.thumbnail == null
                               ? const SizedBox()
@@ -73,11 +75,31 @@ class PaperCard extends StatelessWidget {
                         style: const TextStyle(
                           fontFamily: 'Fredoka',
                           fontSize: 17,
-                          color: kInk,
+                          color: AppColors.ink,
                           fontVariations: [FontVariation('wght', 600)],
                         ),
                       ),
                     ],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 30,
+              right: 4,
+              child: Tooltip(
+                message: 'Delete',
+                child: GestureDetector(
+                  onTap: onDelete,
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: AppColors.danger,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.ink, width: 2.5),
+                    ),
+                    child: const Icon(Icons.delete_rounded, size: 19, color: Colors.white),
                   ),
                 ),
               ),

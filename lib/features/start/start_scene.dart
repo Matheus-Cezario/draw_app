@@ -1,9 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../../core/ui/app_colors.dart';
 
-/// Colours of the start-screen illustration.
-const Color kInk = Color(0xFF2B2350);
 
 /// The scene is drawn in a "design space" that is 820 units tall (or wider if
 /// the screen is wider than tall) and then scaled to the real screen.
@@ -28,7 +27,7 @@ class StartScenePainter extends CustomPainter {
   Paint _fillPaint(Color c) => Paint()..color = c;
 
   Paint _inkPaint([double w = 6]) => Paint()
-    ..color = kInk
+    ..color = AppColors.ink
     ..style = PaintingStyle.stroke
     ..strokeWidth = w
     ..strokeJoin = StrokeJoin.round
@@ -112,15 +111,15 @@ class StartScenePainter extends CustomPainter {
     ]) {
       _line(canvas, r[0] + 0.0, r[1] + 0.0, r[2] + 0.0, r[3] + 0.0, 7);
     }
-    _circle(canvas, 130, 120, 60, const Color(0xFFFFD23F));
+    _circle(canvas, 130, 120, 60, AppColors.artYellow);
     canvas.drawPath(
       Path()
         ..moveTo(108, 120)
         ..quadraticBezierTo(130, 142, 152, 120),
       _inkPaint(),
     );
-    canvas.drawCircle(const Offset(110, 104), 5, _fillPaint(kInk));
-    canvas.drawCircle(const Offset(150, 104), 5, _fillPaint(kInk));
+    canvas.drawCircle(const Offset(110, 104), 5, _fillPaint(AppColors.ink));
+    canvas.drawCircle(const Offset(150, 104), 5, _fillPaint(AppColors.ink));
 
     // ---- Little clouds ----
     _shape(
@@ -176,14 +175,14 @@ class StartScenePainter extends CustomPainter {
     );
     Path rrect(double x, double y, double w, double h, double r) => Path()
       ..addRRect(RRect.fromRectAndRadius(Rect.fromLTWH(x, y, w, h), Radius.circular(r)));
-    _shape(canvas, rrect(902, 470, 44, 44, 4), const Color(0xFFFFD23F));
+    _shape(canvas, rrect(902, 470, 44, 44, 4), AppColors.artYellow);
     _line(canvas, 924, 470, 924, 514);
     _line(canvas, 902, 492, 946, 492);
     _shape(canvas, rrect(1012, 470, 44, 44, 4), Colors.white);
     _line(canvas, 1034, 470, 1034, 514);
     _line(canvas, 1012, 492, 1056, 492);
     _shape(canvas, rrect(954, 530, 52, 88, 24), Colors.white);
-    canvas.drawCircle(const Offset(994, 576), 4, _fillPaint(kInk));
+    canvas.drawCircle(const Offset(994, 576), 4, _fillPaint(AppColors.ink));
     canvas.restore();
 
     // ---- Tree: trunk painted, crown being painted ----
@@ -289,13 +288,13 @@ class StartScenePainter extends CustomPainter {
     _circle(canvas, 980, 690, 14, Colors.white);
     _circle(canvas, 962, 704, 12, Colors.white);
     _circle(canvas, 998, 704, 12, Colors.white);
-    _circle(canvas, 980, 702, 8, const Color(0xFFFFD23F));
+    _circle(canvas, 980, 702, 8, AppColors.artYellow);
     _line(canvas, 1090, 770, 1090, 722);
     const pink = Color(0xFFFF8FB8);
     _circle(canvas, 1090, 702, 14, pink);
     _circle(canvas, 1072, 716, 12, pink);
     _circle(canvas, 1108, 716, 12, pink);
-    _circle(canvas, 1090, 714, 8, const Color(0xFFFFD23F));
+    _circle(canvas, 1090, 714, 8, AppColors.artYellow);
     canvas.restore();
 
     // ---- Paint drops, palette and brush ----
@@ -319,7 +318,7 @@ class StartScenePainter extends CustomPainter {
       const Color(0xFFF4D7A8),
     );
     _circle(canvas, 45, 30, 14, const Color(0xFFF26B5B));
-    _circle(canvas, 90, 18, 14, const Color(0xFFFFD23F));
+    _circle(canvas, 90, 18, 14, AppColors.artYellow);
     _circle(canvas, 135, 32, 14, green);
     _circle(canvas, 40, 74, 14, const Color(0xFF5B8CFF));
     _circle(canvas, 125, 58, 10, Colors.white);
@@ -368,7 +367,7 @@ class TitleCloudPainter extends CustomPainter {
     canvas.drawPath(
       cloud,
       Paint()
-        ..color = kInk
+        ..color = AppColors.ink
         ..style = PaintingStyle.stroke
         ..strokeWidth = 7
         ..strokeJoin = StrokeJoin.round,

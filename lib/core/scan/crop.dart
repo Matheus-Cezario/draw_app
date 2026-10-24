@@ -37,3 +37,17 @@ DecodedPicture cropPicture(DecodedPicture source, CropRect crop) {
   }
   return DecodedPicture(out, w, h);
 }
+
+/// Returns [source] turned a quarter turn clockwise.
+DecodedPicture rotatePictureClockwise(DecodedPicture source) {
+  final w = source.width, h = source.height;
+  final out = Uint8List(w * h * 4);
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      final from = (y * w + x) * 4;
+      final to = (x * h + (h - 1 - y)) * 4;
+      out.setRange(to, to + 4, source.rgba, from);
+    }
+  }
+  return DecodedPicture(out, h, w);
+}

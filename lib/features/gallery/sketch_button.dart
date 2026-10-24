@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import '../../core/ui/app_colors.dart';
 
-const Color _ink = Color(0xFF2B2350);
 
 /// A button that looks hand drawn: wobbly double outline, offset "pencil"
 /// shadow and a drawn plus sign.
@@ -11,7 +11,7 @@ class SketchButton extends StatefulWidget {
     super.key,
     required this.label,
     required this.onTap,
-    this.color = const Color(0xFFFFD23F),
+    this.color = AppColors.appBar,
     this.showPlus = true,
     this.width = 170,
   });
@@ -61,7 +61,7 @@ class _SketchButtonState extends State<SketchButton> {
                     style: const TextStyle(
                       fontFamily: 'Fredoka',
                       fontSize: 30,
-                      color: _ink,
+                      color: AppColors.ink,
                       fontVariations: [FontVariation('wght', 700)],
                     ),
                   ),
@@ -106,7 +106,7 @@ class _SketchPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rect = Rect.fromLTWH(6, 4, size.width - 14, size.height - 16);
     final line = Paint()
-      ..color = _ink
+      ..color = AppColors.ink
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.round
@@ -116,7 +116,7 @@ class _SketchPainter extends CustomPainter {
     final shadowShift = pressed ? const Offset(2, 3) : const Offset(5, 8);
     canvas.drawPath(
       _wobblyRRect(rect.shift(shadowShift), 24, 1.3, 1.0),
-      Paint()..color = _ink,
+      Paint()..color = AppColors.ink,
     );
     final body = _wobblyRRect(rect, 24, 0.4, 1.1);
     canvas.drawPath(body, Paint()..color = color);
@@ -126,7 +126,7 @@ class _SketchPainter extends CustomPainter {
       _wobblyRRect(rect.inflate(1.5), 25, 2.2, 1.0),
       line
         ..strokeWidth = 2
-        ..color = _ink.withValues(alpha: 0.55),
+        ..color = AppColors.ink.withValues(alpha: 0.55),
     );
   }
 
@@ -140,7 +140,7 @@ class _PlusPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final p = Paint()
-      ..color = _ink
+      ..color = AppColors.ink
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;

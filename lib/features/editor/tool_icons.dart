@@ -2,23 +2,22 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../core/ui/app_colors.dart';
 import 'editor_controller.dart';
 
-/// Outline colour shared by every playful icon and button.
-const Color kEditorInk = Color(0xFF2B2350);
 
 /// Pastel tile colour behind each tool.
 Color toolTileColor(ToolType type) => switch (type) {
-      ToolType.brush => const Color(0xFFFFE0B2),
-      ToolType.fill => const Color(0xFFBBDEFB),
-      ToolType.pencil => const Color(0xFFFFF59D),
-      ToolType.eraser => const Color(0xFFF8BBD0),
-      ToolType.eyedropper => const Color(0xFFFFCDD2),
-      ToolType.line => const Color(0xFFD1C4E9),
-      ToolType.rectangle => const Color(0xFFC8E6C9),
-      ToolType.ellipse => const Color(0xFFFFCCBC),
-      ToolType.text => const Color(0xFFE1BEE7),
-      ToolType.selection => const Color(0xFFB2EBF2),
+      ToolType.brush => AppColors.toolBrush,
+      ToolType.fill => AppColors.toolFill,
+      ToolType.pencil => AppColors.toolPencil,
+      ToolType.eraser => AppColors.toolEraser,
+      ToolType.eyedropper => AppColors.toolEyedropper,
+      ToolType.line => AppColors.toolLine,
+      ToolType.rectangle => AppColors.toolRectangle,
+      ToolType.ellipse => AppColors.toolEllipse,
+      ToolType.text => AppColors.toolText,
+      ToolType.selection => AppColors.toolSelection,
     };
 
 /// A chunky, hand-drawn style icon for each tool (drawn in a 48x48 box).
@@ -40,7 +39,7 @@ class _ToolIconPainter extends CustomPainter {
 
   Paint _fill(Color c) => Paint()..color = c;
   Paint get _ink => Paint()
-    ..color = kEditorInk
+    ..color = AppColors.ink
     ..style = PaintingStyle.stroke
     ..strokeWidth = 2.8
     ..strokeCap = StrokeCap.round
@@ -90,7 +89,7 @@ class _ToolIconPainter extends CustomPainter {
             ..close(),
           const Color(0xFF42A5F5),
         );
-        _shape(canvas, _rrect(7, 14, 34, 8, 4), const Color(0xFF1E88E5));
+        _shape(canvas, _rrect(7, 14, 34, 8, 4), AppColors.artBlue);
         _shape(
           canvas,
           Path()
@@ -104,7 +103,7 @@ class _ToolIconPainter extends CustomPainter {
         canvas.translate(24, 24);
         canvas.rotate(math.pi / 4);
         _shape(canvas, _rrect(-5.5, -24, 11, 6, 2), const Color(0xFFFF8FB8));
-        _shape(canvas, _rrect(-5.5, -18, 11, 26, 1), const Color(0xFFFFD23F));
+        _shape(canvas, _rrect(-5.5, -18, 11, 26, 1), AppColors.artYellow);
         canvas.drawLine(const Offset(0, -18), const Offset(0, 8), _ink..strokeWidth = 1.8);
         _shape(
           canvas,
@@ -113,7 +112,7 @@ class _ToolIconPainter extends CustomPainter {
         );
         canvas.drawPath(
           Path()..addPolygon(const [Offset(-2, 16), Offset(2, 16), Offset(0, 21)], true),
-          _fill(kEditorInk),
+          _fill(AppColors.ink),
         );
       case ToolType.eraser:
         canvas.translate(24, 24);
@@ -193,7 +192,7 @@ class _ToolIconPainter extends CustomPainter {
                   ..style = PaintingStyle.stroke
                   ..strokeWidth = 5
                   ..strokeJoin = StrokeJoin.round
-                  ..color = kEditorInk,
+                  ..color = AppColors.ink,
               ),
             ),
             textDirection: TextDirection.ltr,

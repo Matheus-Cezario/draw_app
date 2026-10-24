@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/storage/project_repository.dart';
 import '../gallery/gallery_page.dart';
 import 'start_scene.dart';
+import '../../core/ui/app_colors.dart';
 
 /// First screen: a half-painted picture, the app name on a cloud and one big
 /// round Play button.
@@ -99,15 +100,7 @@ class _TitleCloud extends StatelessWidget {
   const _TitleCloud();
 
   static const _letters = 'Color Fun';
-  static const _colors = [
-    Color(0xFFE0452F),
-    Color(0xFFD06A00),
-    Color(0xFF2E9E4F),
-    Color(0xFF1F7FD1),
-    Color(0xFF8A3FD1),
-    Color(0xFFE0452F),
-    Color(0xFFD06A00),
-  ];
+  static const _colors = AppColors.titleLetters;
 
   @override
   Widget build(BuildContext context) {
@@ -171,10 +164,10 @@ class _PlayButton extends StatelessWidget {
           height: 190,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: const Color(0xFFF2543D),
-            border: Border.all(color: kInk, width: 8),
+            color: AppColors.danger,
+            border: Border.all(color: AppColors.ink, width: 8),
             boxShadow: [
-              BoxShadow(color: kInk, offset: Offset(0, pressed ? 4 : 12)),
+              BoxShadow(color: AppColors.ink, offset: Offset(0, pressed ? 4 : 12)),
             ],
           ),
           child: const Center(
@@ -203,7 +196,7 @@ class _TrianglePainter extends CustomPainter {
     canvas.drawPath(
       tri,
       Paint()
-        ..color = kInk
+        ..color = AppColors.ink
         ..style = PaintingStyle.stroke
         ..strokeWidth = 7
         ..strokeJoin = StrokeJoin.round,

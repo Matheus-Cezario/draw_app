@@ -7,6 +7,7 @@ import '../../core/scan/crop.dart';
 import '../../core/scan/scan_service.dart';
 import '../../core/ui/kid_ui.dart';
 import '../gallery/sketch_button.dart';
+import '../../core/ui/app_colors.dart';
 
 enum _Grab { none, move, topLeft, topRight, bottomLeft, bottomRight, left, right, top, bottom }
 
@@ -120,16 +121,16 @@ class _CropPageState extends State<CropPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kKidBoard,
+      backgroundColor: AppColors.board,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD23F),
+        backgroundColor: AppColors.appBar,
         surfaceTintColor: Colors.transparent,
-        shape: const Border(bottom: BorderSide(color: kKidInk, width: 3)),
+        shape: const Border(bottom: BorderSide(color: AppColors.ink, width: 3)),
         leadingWidth: 60,
         leading: Center(
           child: RoundSticker(
             icon: Icons.arrow_back_rounded,
-            color: const Color(0xFF1E88E5),
+            color: AppColors.back,
             tooltip: 'Back',
             onTap: () => Navigator.of(context).pop(),
           ),
@@ -159,8 +160,8 @@ class _CropPageState extends State<CropPage> {
           ),
           Container(
             decoration: const BoxDecoration(
-              color: kKidCream,
-              border: Border(top: BorderSide(color: kKidInk, width: 3)),
+              color: AppColors.cream,
+              border: Border(top: BorderSide(color: AppColors.ink, width: 3)),
               borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             ),
             child: SafeArea(
@@ -174,14 +175,14 @@ class _CropPageState extends State<CropPage> {
                       label: 'Whole picture',
                       icon: Icons.crop_free_rounded,
                       selected: _crop.isFull,
-                      color: const Color(0xFFFFAB91),
+                      color: AppColors.chipColours,
                       onTap: () => setState(() => _crop = CropRect.full),
                     ),
                     SketchButton(
                       label: 'Done',
                       showPlus: false,
                       width: 150,
-                      color: const Color(0xFF66D17A),
+                      color: AppColors.go,
                       onTap: () => Navigator.of(context).pop(_crop),
                     ),
                   ],
@@ -218,7 +219,7 @@ class _CropPainter extends CustomPainter {
     canvas.drawRect(
       imageRect,
       Paint()
-        ..color = kKidInk
+        ..color = AppColors.ink
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3,
     );
@@ -226,7 +227,7 @@ class _CropPainter extends CustomPainter {
     // Dim what will be cut away.
     canvas.drawPath(
       Path.combine(PathOperation.difference, Path()..addRect(imageRect), Path()..addRect(crop)),
-      Paint()..color = const Color(0x99000000),
+      Paint()..color = AppColors.cropShade,
     );
 
     // Frame: white line with an ink edge, plus thirds.
@@ -241,7 +242,7 @@ class _CropPainter extends CustomPainter {
     canvas.drawRect(
       crop,
       Paint()
-        ..color = kKidInk
+        ..color = AppColors.ink
         ..style = PaintingStyle.stroke
         ..strokeWidth = 7,
     );
@@ -261,12 +262,12 @@ class _CropPainter extends CustomPainter {
       crop.bottomRight,
     ];
     for (final p in handles) {
-      canvas.drawCircle(p, 15, Paint()..color = const Color(0xFFFFD23F));
+      canvas.drawCircle(p, 15, Paint()..color = AppColors.appBar);
       canvas.drawCircle(
         p,
         15,
         Paint()
-          ..color = kKidInk
+          ..color = AppColors.ink
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3.5,
       );
@@ -277,7 +278,7 @@ class _CropPainter extends CustomPainter {
         p,
         9,
         Paint()
-          ..color = kKidInk
+          ..color = AppColors.ink
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3,
       );

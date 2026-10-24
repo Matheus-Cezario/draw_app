@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
+import 'app_colors.dart';
 
-/// Shared look for the playful screens: thick ink outlines, sticker buttons.
-const Color kKidInk = Color(0xFF2B2350);
-const Color kKidBoard = Color(0xFF3DB8F0);
-const Color kKidCream = Color(0xFFFFF3C4);
 
-TextStyle kidText(double size, {double weight = 600, Color color = kKidInk}) =>
+TextStyle kidText(double size, {double weight = 600, Color color = AppColors.ink}) =>
     TextStyle(
       fontFamily: 'Fredoka',
       fontSize: size,
@@ -20,7 +17,7 @@ class StickerChoice extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
-    this.color = const Color(0xFFFFD23F),
+    this.color = AppColors.appBar,
     this.icon,
   });
 
@@ -40,16 +37,16 @@ class StickerChoice extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? color : Colors.white,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: kKidInk, width: selected ? 3.5 : 2.5),
+          border: Border.all(color: AppColors.ink, width: selected ? 3.5 : 2.5),
           boxShadow: [
-            BoxShadow(color: kKidInk, offset: Offset(0, selected ? 4 : 2)),
+            BoxShadow(color: AppColors.ink, offset: Offset(0, selected ? 4 : 2)),
           ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 22, color: kKidInk),
+              Icon(icon, size: 22, color: AppColors.ink),
               const SizedBox(width: 6),
             ],
             Text(label, style: kidText(17, weight: 600)),
@@ -89,10 +86,10 @@ class RoundSticker extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: enabled ? color : const Color(0xFFD9D4C4),
-            border: Border.all(color: kKidInk, width: 3),
+            color: enabled ? color : AppColors.disabled,
+            border: Border.all(color: AppColors.ink, width: 3),
             boxShadow: enabled
-                ? const [BoxShadow(color: kKidInk, offset: Offset(0, 3))]
+                ? const [BoxShadow(color: AppColors.ink, offset: Offset(0, 3))]
                 : null,
           ),
           child: Icon(icon, size: size * 0.56, color: Colors.white),

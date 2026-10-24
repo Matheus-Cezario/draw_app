@@ -11,8 +11,8 @@ import 'canvas_view.dart';
 import 'editor_controller.dart';
 import 'editor_toolbars.dart';
 import 'layers_sheet.dart';
-import 'tool_icons.dart';
 import 'rename_dialog.dart';
+import '../../core/ui/app_colors.dart';
 
 /// Hosts the [EditorController] and lays out the editor chrome.
 class EditorPage extends StatelessWidget {
@@ -121,15 +121,15 @@ class _EditorScaffoldState extends State<_EditorScaffold> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFFFFD23F),
+          backgroundColor: AppColors.appBar,
           surfaceTintColor: Colors.transparent,
-          shape: const Border(bottom: BorderSide(color: kEditorInk, width: 3)),
+          shape: const Border(bottom: BorderSide(color: AppColors.ink, width: 3)),
           toolbarHeight: landscape ? 52 : 64,
           leadingWidth: 54,
           leading: Center(
             child: _RoundAction(
               icon: Icons.arrow_back_rounded,
-              color: const Color(0xFF1E88E5),
+              color: AppColors.back,
               tooltip: 'Back',
               onTap: () => Navigator.of(context).maybePop(),
             ),
@@ -148,13 +148,13 @@ class _EditorScaffoldState extends State<_EditorScaffold> {
                     style: const TextStyle(
                       fontFamily: 'Fredoka',
                       fontSize: 22,
-                      color: kEditorInk,
+                      color: AppColors.ink,
                       fontVariations: [FontVariation('wght', 700)],
                     ),
                   ),
                 ),
                 const SizedBox(width: 6),
-                const Icon(Icons.edit_rounded, size: 18, color: kEditorInk),
+                const Icon(Icons.edit_rounded, size: 18, color: AppColors.ink),
               ],
             ),
           ),
@@ -178,10 +178,10 @@ class _EditorScaffoldState extends State<_EditorScaffold> {
               onTap: () => showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                backgroundColor: const Color(0xFFFFF3C4),
+                backgroundColor: AppColors.cream,
                 shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                  side: BorderSide(color: kEditorInk, width: 3),
+                  side: BorderSide(color: AppColors.ink, width: 3),
                 ),
                 builder: (_) => ChangeNotifierProvider.value(
                   value: c,
@@ -191,7 +191,7 @@ class _EditorScaffoldState extends State<_EditorScaffold> {
             ),
             _RoundAction(
               icon: Icons.ios_share_rounded,
-              color: const Color(0xFF43A047),
+              color: AppColors.confirm,
               tooltip: 'Share',
               onTap: _export,
             ),
@@ -233,16 +233,16 @@ class _RoundAction extends StatelessWidget {
             height: 37,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: enabled ? color : const Color(0xFFD9D4C4),
-              border: Border.all(color: kEditorInk, width: 3),
+              color: enabled ? color : AppColors.disabled,
+              border: Border.all(color: AppColors.ink, width: 3),
               boxShadow: enabled
-                  ? const [BoxShadow(color: kEditorInk, offset: Offset(0, 3))]
+                  ? const [BoxShadow(color: AppColors.ink, offset: Offset(0, 3))]
                   : null,
             ),
             child: Icon(
               icon,
               size: 21,
-              color: enabled ? Colors.white : const Color(0xFF8B8676),
+              color: enabled ? Colors.white : AppColors.disabledText,
             ),
           ),
         ),

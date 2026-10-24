@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../core/ui/kid_ui.dart';
+import '../../core/ui/app_colors.dart';
 
 enum NewChoice { book, blank, gallery, camera }
 
@@ -13,10 +14,10 @@ Future<NewChoice?> showNewDrawingSheet(BuildContext context) {
     // Lets the sheet use the full height, so it fits when the phone is on its
     // side (the default limit is 9/16 of the screen).
     isScrollControlled: true,
-    backgroundColor: kKidCream,
+    backgroundColor: AppColors.cream,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      side: BorderSide(color: kKidInk, width: 3),
+      side: BorderSide(color: AppColors.ink, width: 3),
     ),
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
@@ -35,7 +36,7 @@ Future<NewChoice?> showNewDrawingSheet(BuildContext context) {
                 Expanded(
                   child: _OptionTile(
                     label: 'Blank page',
-                    color: const Color(0xFFFFF59D),
+                    color: AppColors.tileBlank,
                     painter: const _BlankPagePainter(),
                     onTap: () => Navigator.pop(context, NewChoice.blank),
                   ),
@@ -44,7 +45,7 @@ Future<NewChoice?> showNewDrawingSheet(BuildContext context) {
                 Expanded(
                   child: _OptionTile(
                     label: 'A picture',
-                    color: const Color(0xFFBBDEFB),
+                    color: AppColors.tilePicture,
                     painter: const _PicturePainter(),
                     onTap: () => Navigator.pop(context, NewChoice.gallery),
                   ),
@@ -53,7 +54,7 @@ Future<NewChoice?> showNewDrawingSheet(BuildContext context) {
                 Expanded(
                   child: _OptionTile(
                     label: 'Take photo',
-                    color: const Color(0xFFF8BBD0),
+                    color: AppColors.tileCamera,
                     painter: const _CameraPainter(),
                     onTap: () => Navigator.pop(context, NewChoice.camera),
                   ),
@@ -80,10 +81,10 @@ class _BookTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         decoration: BoxDecoration(
-          color: const Color(0xFFC8E6C9),
+          color: AppColors.tileBook,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: kKidInk, width: 3),
-          boxShadow: const [BoxShadow(color: kKidInk, offset: Offset(0, 5))],
+          border: Border.all(color: AppColors.ink, width: 3),
+          boxShadow: const [BoxShadow(color: AppColors.ink, offset: Offset(0, 5))],
         ),
         child: Row(
           children: [
@@ -98,7 +99,7 @@ class _BookTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, size: 34, color: kKidInk),
+            const Icon(Icons.chevron_right_rounded, size: 34, color: AppColors.ink),
           ],
         ),
       ),
@@ -128,8 +129,8 @@ class _OptionTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: kKidInk, width: 3),
-          boxShadow: const [BoxShadow(color: kKidInk, offset: Offset(0, 5))],
+          border: Border.all(color: AppColors.ink, width: 3),
+          boxShadow: const [BoxShadow(color: AppColors.ink, offset: Offset(0, 5))],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -145,7 +146,7 @@ class _OptionTile extends StatelessWidget {
 }
 
 Paint _ink([double w = 3]) => Paint()
-  ..color = kKidInk
+  ..color = AppColors.ink
   ..style = PaintingStyle.stroke
   ..strokeWidth = w
   ..strokeCap = StrokeCap.round
@@ -204,7 +205,7 @@ class _BlankPagePainter extends CustomPainter {
       i == 0 ? star.moveTo(pt.dx, pt.dy) : star.lineTo(pt.dx, pt.dy);
     }
     star.close();
-    _shape(canvas, star, const Color(0xFFFFD23F));
+    _shape(canvas, star, AppColors.artYellow);
   }
 
   @override
@@ -233,7 +234,7 @@ class _PicturePainter extends CustomPainter {
       Paint()..color = const Color(0xFF66BB6A),
     );
     canvas.restore();
-    canvas.drawCircle(const Offset(44, 24), 6, Paint()..color = const Color(0xFFFFD23F));
+    canvas.drawCircle(const Offset(44, 24), 6, Paint()..color = AppColors.artYellow);
     canvas.drawCircle(const Offset(44, 24), 6, _ink(2.5));
     canvas.drawPath(frame, _ink());
   }
@@ -254,7 +255,7 @@ class _CameraPainter extends CustomPainter {
     canvas.drawCircle(const Offset(32, 36), 7, Paint()..color = const Color(0xFF42A5F5));
     canvas.drawCircle(const Offset(32, 36), 7, _ink(2.5));
     canvas.drawCircle(const Offset(28, 32), 2, Paint()..color = Colors.white);
-    canvas.drawCircle(const Offset(51, 25), 3, Paint()..color = const Color(0xFFFFD23F));
+    canvas.drawCircle(const Offset(51, 25), 3, Paint()..color = AppColors.artYellow);
   }
 
   @override
@@ -285,11 +286,11 @@ class _BookPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.4
       ..strokeCap = StrokeCap.round;
-    const colors = [Color(0xFFF26B5B), Color(0xFFFFD23F), Color(0xFF42A5F5)];
+    const colors = [Color(0xFFF26B5B), AppColors.artYellow, Color(0xFF42A5F5)];
     for (var i = 0; i < 3; i++) {
       canvas.drawLine(Offset(40, 24.0 + i * 7), Offset(55, 22.0 + i * 7), stripe..color = colors[i]);
     }
-    canvas.drawCircle(const Offset(18, 30), 6, Paint()..color = const Color(0xFFFFD23F));
+    canvas.drawCircle(const Offset(18, 30), 6, Paint()..color = AppColors.artYellow);
     canvas.drawCircle(const Offset(18, 30), 6, _ink(2.5));
     canvas.drawPath(
       Path()

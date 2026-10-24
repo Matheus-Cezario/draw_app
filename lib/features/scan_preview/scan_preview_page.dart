@@ -13,6 +13,7 @@ import '../../core/ui/kid_ui.dart';
 import '../gallery/sketch_button.dart';
 import 'crop_page.dart';
 import '../editor/editor_page.dart';
+import '../../core/ui/app_colors.dart';
 
 /// Lets the user tune the scan and see what the bucket will treat as lines
 /// and regions before the project is created.
@@ -99,6 +100,18 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
     await _scan();
   }
 
+  Future<void> _rotate() async {
+    final original = _original;
+    if (original == null || _busy) return;
+    final turned = rotatePictureClockwise(original);
+    setState(() {
+      _original = turned;
+      _crop = CropRect.full; // the old crop no longer fits the turned picture
+      _picture = turned;
+    });
+    await _scan();
+  }
+
   void _scheduleScan() {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 350), _scan);
@@ -171,9 +184,9 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: kKidInk, width: 3),
+                  border: Border.all(color: AppColors.ink, width: 3),
                   boxShadow: const [
-                    BoxShadow(color: Color(0x55000000), blurRadius: 10, offset: Offset(3, 6)),
+                    BoxShadow(color: AppColors.shadowStrong, blurRadius: 10, offset: Offset(3, 6)),
                   ],
                 ),
                 child: RawImage(image: image, fit: BoxFit.contain),
@@ -186,9 +199,9 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
-              border: Border.all(color: kKidInk, width: 3),
+              border: Border.all(color: AppColors.ink, width: 3),
             ),
-            child: const CircularProgressIndicator(color: Color(0xFFF2543D), strokeWidth: 6),
+            child: const CircularProgressIndicator(color: AppColors.danger, strokeWidth: 6),
           ),
       ],
     );
@@ -198,10 +211,10 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
     final result = _result;
     return Container(
       decoration: const BoxDecoration(
-        color: kKidCream,
+        color: AppColors.cream,
         border: Border(
-          top: BorderSide(color: kKidInk, width: 3),
-          left: BorderSide(color: kKidInk, width: 3),
+          top: BorderSide(color: AppColors.ink, width: 3),
+          left: BorderSide(color: AppColors.ink, width: 3),
         ),
         borderRadius: BorderRadius.only(topLeft: Radius.circular(28), topRight: Radius.circular(28)),
       ),
@@ -229,7 +242,7 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
                     StickerChoice(
                       label: label,
                       selected: _sensitivity == value,
-                      color: const Color(0xFFCE93D8),
+                      color: AppColors.chipLines,
                       onTap: () {
                         setState(() => _sensitivity = value);
                         _scheduleScan();
@@ -248,7 +261,7 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
                     StickerChoice(
                       label: label,
                       selected: _gap == value,
-                      color: const Color(0xFF80DEEA),
+                      color: AppColors.chipGaps,
                       onTap: () {
                         setState(() => _gap = value);
                         _scheduleScan();
@@ -262,17 +275,24 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
                 runSpacing: 10,
                 children: [
                   StickerChoice(
+                    label: 'Turn picture',
+                    icon: Icons.rotate_right_rounded,
+                    selected: false,
+                    color: AppColors.chipTurn,
+                    onTap: _rotate,
+                  ),
+                  StickerChoice(
                     label: _crop.isFull ? 'Cut picture' : 'Picture cut',
                     icon: Icons.crop_rounded,
                     selected: !_crop.isFull,
-                    color: const Color(0xFFA5D6A7),
+                    color: AppColors.chipCut,
                     onTap: _openCrop,
                   ),
                   StickerChoice(
                 label: _showRegions ? 'Showing colours' : 'Show colours',
                 icon: Icons.palette_rounded,
                 selected: _showRegions,
-                color: const Color(0xFFFFAB91),
+                color: AppColors.chipColours,
                 onTap: () => setState(() => _showRegions = !_showRegions),
                   ),
                 ],
@@ -285,7 +305,7 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
                     label: "Let's go!",
                     showPlus: false,
                     width: 230,
-                    color: const Color(0xFF66D17A),
+                    color: AppColors.go,
                     onTap: canUse ? _create : () {},
                   ),
                 ),
@@ -322,16 +342,16 @@ class _ScanPreviewPageState extends State<ScanPreviewPage> {
     }
 
     return Scaffold(
-      backgroundColor: kKidBoard,
+      backgroundColor: AppColors.board,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD23F),
+        backgroundColor: AppColors.appBar,
         surfaceTintColor: Colors.transparent,
-        shape: const Border(bottom: BorderSide(color: kKidInk, width: 3)),
+        shape: const Border(bottom: BorderSide(color: AppColors.ink, width: 3)),
         leadingWidth: 60,
         leading: Center(
           child: RoundSticker(
             icon: Icons.arrow_back_rounded,
-            color: const Color(0xFF1E88E5),
+            color: AppColors.back,
             tooltip: 'Back',
             onTap: () => Navigator.of(context).maybePop(),
           ),

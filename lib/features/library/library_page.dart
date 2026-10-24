@@ -8,14 +8,15 @@ import '../../core/scan/scan_service.dart';
 import '../../core/storage/project_repository.dart';
 import '../../core/ui/kid_ui.dart';
 import '../editor/editor_page.dart';
+import '../../core/ui/app_colors.dart';
 
 /// Colour and icon of each category header.
 ({Color color, IconData icon}) _style(DrawingCategory c) => switch (c) {
-      DrawingCategory.animals => (color: const Color(0xFFFFB74D), icon: Icons.pets_rounded),
-      DrawingCategory.cars => (color: const Color(0xFFEF5350), icon: Icons.directions_car_rounded),
-      DrawingCategory.motorcycles => (color: const Color(0xFFBA68C8), icon: Icons.two_wheeler_rounded),
-      DrawingCategory.houses => (color: const Color(0xFF81C784), icon: Icons.home_rounded),
-      DrawingCategory.plants => (color: const Color(0xFFF48FB1), icon: Icons.local_florist_rounded),
+      DrawingCategory.animals => (color: AppColors.categoryAnimals, icon: Icons.pets_rounded),
+      DrawingCategory.cars => (color: AppColors.categoryCars, icon: Icons.directions_car_rounded),
+      DrawingCategory.motorcycles => (color: AppColors.categoryMotorcycles, icon: Icons.two_wheeler_rounded),
+      DrawingCategory.houses => (color: AppColors.categoryHouses, icon: Icons.home_rounded),
+      DrawingCategory.plants => (color: AppColors.categoryPlants, icon: Icons.local_florist_rounded),
     };
 
 /// Ready-made drawings, one row per category.
@@ -58,16 +59,16 @@ class _LibraryPageState extends State<LibraryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kKidBoard,
+      backgroundColor: AppColors.board,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFFFD23F),
+        backgroundColor: AppColors.appBar,
         surfaceTintColor: Colors.transparent,
-        shape: const Border(bottom: BorderSide(color: kKidInk, width: 3)),
+        shape: const Border(bottom: BorderSide(color: AppColors.ink, width: 3)),
         leadingWidth: 60,
         leading: Center(
           child: RoundSticker(
             icon: Icons.arrow_back_rounded,
-            color: const Color(0xFF1E88E5),
+            color: AppColors.back,
             tooltip: 'Back',
             onTap: () => Navigator.of(context).maybePop(),
           ),
@@ -86,19 +87,19 @@ class _LibraryPageState extends State<LibraryPage> {
           if (_busy)
             Positioned.fill(
               child: ColoredBox(
-                color: const Color(0x66000000),
+                color: AppColors.scrim,
                 child: Center(
                   child: Container(
                     padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
-                      color: kKidCream,
+                      color: AppColors.cream,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: kKidInk, width: 3),
+                      border: Border.all(color: AppColors.ink, width: 3),
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const CircularProgressIndicator(color: Color(0xFFF2543D), strokeWidth: 6),
+                        const CircularProgressIndicator(color: AppColors.danger, strokeWidth: 6),
                         const SizedBox(height: 14),
                         Text('Getting your page ready...', style: kidText(18, weight: 700)),
                       ],
@@ -134,8 +135,8 @@ class _Section extends StatelessWidget {
               decoration: BoxDecoration(
                 color: style.color,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: kKidInk, width: 3),
-                boxShadow: const [BoxShadow(color: kKidInk, offset: Offset(0, 3))],
+                border: Border.all(color: AppColors.ink, width: 3),
+                boxShadow: const [BoxShadow(color: AppColors.ink, offset: Offset(0, 3))],
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -145,9 +146,9 @@ class _Section extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       shape: BoxShape.circle,
-                      border: Border.all(color: kKidInk, width: 2.5),
+                      border: Border.all(color: AppColors.ink, width: 2.5),
                     ),
-                    child: Icon(style.icon, size: 22, color: kKidInk),
+                    child: Icon(style.icon, size: 22, color: AppColors.ink),
                   ),
                   const SizedBox(width: 8),
                   Text(category.label, style: kidText(22, weight: 700)),
@@ -188,10 +189,10 @@ class _DrawingCard extends StatelessWidget {
         width: 158,
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),
         decoration: BoxDecoration(
-          color: const Color(0xFFFFFEF9),
+          color: AppColors.paper,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: kKidInk, width: 3),
-          boxShadow: const [BoxShadow(color: kKidInk, offset: Offset(0, 4))],
+          border: Border.all(color: AppColors.ink, width: 3),
+          boxShadow: const [BoxShadow(color: AppColors.ink, offset: Offset(0, 4))],
         ),
         child: Column(
           children: [
@@ -202,7 +203,7 @@ class _DrawingCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0x22000000)),
+                    border: Border.all(color: AppColors.hairlineSoft),
                   ),
                   child: CustomPaint(painter: _ThumbPainter(drawing)),
                 ),

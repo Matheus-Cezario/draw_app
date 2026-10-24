@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/storage/project_repository.dart';
 import 'features/start/start_page.dart';
+import 'core/ui/app_colors.dart';
 
 class ColorFunApp extends StatelessWidget {
   const ColorFunApp({super.key, required this.repository});
@@ -17,12 +18,12 @@ class ColorFunApp extends StatelessWidget {
       supportedLocales: const [Locale('en'), Locale('pt')],
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.seed),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
+          seedColor: AppColors.seed,
           brightness: Brightness.dark,
         ),
         useMaterial3: true,

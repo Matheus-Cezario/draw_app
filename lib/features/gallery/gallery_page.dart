@@ -9,9 +9,8 @@ import '../library/library_page.dart';
 import 'new_drawing_sheet.dart';
 import 'paper_card.dart';
 import 'sketch_button.dart';
+import '../../core/ui/app_colors.dart';
 
-/// Strong board colour the papers are pinned on.
-const Color _boardColor = Color(0xFF3DB8F0);
 
 /// Lists saved projects and starts new ones.
 class GalleryPage extends StatefulWidget {
@@ -160,7 +159,7 @@ class _GalleryPageState extends State<GalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _boardColor,
+      backgroundColor: AppColors.board,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -170,7 +169,7 @@ class _GalleryPageState extends State<GalleryPage> {
           style: TextStyle(
             fontFamily: 'Fredoka',
             fontSize: 32,
-            color: kInk,
+            color: AppColors.ink,
             fontVariations: [FontVariation('wght', 700)],
           ),
         ),
@@ -181,7 +180,7 @@ class _GalleryPageState extends State<GalleryPage> {
         future: _projects,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator(color: kInk));
+            return const Center(child: CircularProgressIndicator(color: AppColors.ink));
           }
           final projects = snapshot.data!;
           if (projects.isEmpty) {
@@ -194,7 +193,7 @@ class _GalleryPageState extends State<GalleryPage> {
                   style: TextStyle(
                     fontFamily: 'Fredoka',
                     fontSize: 24,
-                    color: kInk,
+                    color: AppColors.ink,
                     fontVariations: [FontVariation('wght', 600)],
                   ),
                 ),
@@ -216,6 +215,7 @@ class _GalleryPageState extends State<GalleryPage> {
                 project: p,
                 onTap: () => _open(p.id),
                 onLongPress: () => _showActions(p),
+                onDelete: () => _confirmDelete(p),
               );
             },
           );

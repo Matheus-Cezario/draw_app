@@ -3,26 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'editor_controller.dart';
 import 'tool_icons.dart';
-
-/// Fixed palette: kids pick from big colours instead of sliders. Ordered in
-/// pairs (light on top, strong below) so a two-row bar groups similar hues.
-const List<Color> kPalette = [
-  Color(0xFFFFFFFF), Color(0xFF000000), // white, black
-  Color(0xFFE0E0E0), Color(0xFF757575), // greys
-  Color(0xFFFFCDD2), Color(0xFFE53935), // red
-  Color(0xFFF48FB1), Color(0xFFD81B60), // pink
-  Color(0xFFFFCCBC), Color(0xFFFF7043), // coral
-  Color(0xFFFFE0B2), Color(0xFFFB8C00), // orange
-  Color(0xFFFFF59D), Color(0xFFFDD835), // yellow
-  Color(0xFFDCEDC8), Color(0xFF9CCC65), // light green
-  Color(0xFF81C784), Color(0xFF2E7D32), // green
-  Color(0xFFB2EBF2), Color(0xFF00ACC1), // turquoise
-  Color(0xFF90CAF9), Color(0xFF1E88E5), // blue
-  Color(0xFF9FA8DA), Color(0xFF283593), // dark blue
-  Color(0xFFE1BEE7), Color(0xFF8E24AA), // purple
-  Color(0xFFD7CCC8), Color(0xFF6D4C41), // brown
-  Color(0xFFFFD6B0), Color(0xFFD7A86E), // skin / sand
-];
+import '../../core/ui/app_colors.dart';
 
 /// Brush sizes offered to the child (document pixels).
 const List<double> kSizes = [8, 22, 44, 80];
@@ -57,11 +38,11 @@ class ColorBar extends StatelessWidget {
             decoration: BoxDecoration(
               color: swatch,
               shape: BoxShape.circle,
-              border: Border.all(color: kEditorInk, width: selected ? 3.5 : 2.5),
+              border: Border.all(color: AppColors.ink, width: selected ? 3.5 : 2.5),
               boxShadow: selected
                   ? const [
                       BoxShadow(color: Colors.white, spreadRadius: 2.5),
-                      BoxShadow(color: kEditorInk, spreadRadius: 5),
+                      BoxShadow(color: AppColors.ink, spreadRadius: 5),
                     ]
                   : null,
             ),
@@ -72,8 +53,8 @@ class ColorBar extends StatelessWidget {
 
     return Container(
       decoration: const BoxDecoration(
-        color: Color(0xFFFFF3C4),
-        border: Border(bottom: BorderSide(color: kEditorInk, width: 3)),
+        color: AppColors.cream,
+        border: Border(bottom: BorderSide(color: AppColors.ink, width: 3)),
       ),
       child: SizedBox(
         height: cell * rows + 8,
@@ -83,7 +64,7 @@ class ColorBar extends StatelessWidget {
           mainAxisSpacing: 2,
           crossAxisSpacing: 2,
           padding: const EdgeInsets.all(4),
-          children: [for (final swatch in kPalette) dot(swatch)],
+          children: [for (final swatch in AppColors.swatches) dot(swatch)],
         ),
       ),
     );
@@ -109,7 +90,6 @@ const _tools = <_ToolInfo>[
   _ToolInfo(ToolType.selection, 'Move'),
 ];
 
-const Color _panelColor = Color(0xFFE6DCFF);
 
 /// Brush sizes + tools. Horizontal strip below the canvas in portrait, a
 /// vertical rail on the side in landscape.
@@ -145,8 +125,8 @@ class ToolPanel extends StatelessWidget {
       return Container(
         width: 156,
         decoration: const BoxDecoration(
-          color: _panelColor,
-          border: Border(right: BorderSide(color: kEditorInk, width: 3)),
+          color: AppColors.panel,
+          border: Border(right: BorderSide(color: AppColors.ink, width: 3)),
         ),
         child: ListView(
           padding: const EdgeInsets.all(8),
@@ -162,8 +142,8 @@ class ToolPanel extends StatelessWidget {
     }
     return Container(
       decoration: const BoxDecoration(
-        color: _panelColor,
-        border: Border(top: BorderSide(color: kEditorInk, width: 3)),
+        color: AppColors.panel,
+        border: Border(top: BorderSide(color: AppColors.ink, width: 3)),
       ),
       child: SafeArea(
         top: false,
@@ -214,11 +194,11 @@ class _SizeButton extends StatelessWidget {
         height: 48,
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFFFFF3C4) : Colors.white,
+          color: selected ? AppColors.cream : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: kEditorInk, width: selected ? 3.5 : 2),
+          border: Border.all(color: AppColors.ink, width: selected ? 3.5 : 2),
           boxShadow: selected
-              ? const [BoxShadow(color: kEditorInk, offset: Offset(0, 3))]
+              ? const [BoxShadow(color: AppColors.ink, offset: Offset(0, 3))]
               : null,
         ),
         child: Center(
@@ -228,7 +208,7 @@ class _SizeButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: color,
               shape: BoxShape.circle,
-              border: Border.all(color: kEditorInk, width: 2),
+              border: Border.all(color: AppColors.ink, width: 2),
             ),
           ),
         ),
@@ -262,10 +242,10 @@ class _ToolButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: toolTileColor(info.type),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: kEditorInk, width: selected ? 4 : 2.5),
+            border: Border.all(color: AppColors.ink, width: selected ? 4 : 2.5),
             boxShadow: [
               BoxShadow(
-                color: kEditorInk,
+                color: AppColors.ink,
                 offset: Offset(0, selected ? 5 : 2),
               ),
             ],
@@ -279,7 +259,7 @@ class _ToolButton extends StatelessWidget {
                 style: const TextStyle(
                   fontFamily: 'Fredoka',
                   fontSize: 12,
-                  color: kEditorInk,
+                  color: AppColors.ink,
                   fontVariations: [FontVariation('wght', 600)],
                 ),
               ),

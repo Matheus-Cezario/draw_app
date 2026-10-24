@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../core/ui/app_colors.dart';
 
-const Color _ink = Color(0xFF2B2350);
 
 enum Animal { cat, dog, bunny, panda, frog, pig }
 
@@ -45,7 +45,7 @@ class _AnimalPainter extends CustomPainter {
 
   Paint _fill(Color c) => Paint()..color = c;
   Paint get _line => Paint()
-    ..color = _ink
+    ..color = AppColors.ink
     ..style = PaintingStyle.stroke
     ..strokeWidth = 3.4
     ..strokeCap = StrokeCap.round
@@ -62,8 +62,8 @@ class _AnimalPainter extends CustomPainter {
   Path _tri(Offset a, Offset b, Offset c) => Path()..addPolygon([a, b, c], true);
 
   void _eyes(Canvas c, {double y = 33, double dx = 9}) {
-    c.drawCircle(Offset(32 - dx, y), 3, _fill(_ink));
-    c.drawCircle(Offset(32 + dx, y), 3, _fill(_ink));
+    c.drawCircle(Offset(32 - dx, y), 3, _fill(AppColors.ink));
+    c.drawCircle(Offset(32 + dx, y), 3, _fill(AppColors.ink));
   }
 
   @override
@@ -95,7 +95,7 @@ class _AnimalPainter extends CustomPainter {
         _eyes(canvas, y: 30);
         canvas.drawOval(
           Rect.fromCenter(center: const Offset(32, 40), width: 11, height: 8),
-          _fill(_ink),
+          _fill(AppColors.ink),
         );
       case Animal.bunny:
         _shape(canvas, _oval(21, 12, 6.5, 14), Colors.white);
@@ -112,23 +112,23 @@ class _AnimalPainter extends CustomPainter {
         _eyes(canvas, y: 36, dx: 8);
         _shape(canvas, _tri(const Offset(29, 42), const Offset(35, 42), const Offset(32, 46)), const Color(0xFFFF7A9A));
       case Animal.panda:
-        _shape(canvas, _oval(12, 14, 8, 8), _ink);
-        _shape(canvas, _oval(52, 14, 8, 8), _ink);
+        _shape(canvas, _oval(12, 14, 8, 8), AppColors.ink);
+        _shape(canvas, _oval(52, 14, 8, 8), AppColors.ink);
         _shape(canvas, _oval(32, 36, 23, 21), Colors.white);
-        canvas.drawPath(_oval(22, 33, 6, 8), _fill(_ink));
-        canvas.drawPath(_oval(42, 33, 6, 8), _fill(_ink));
+        canvas.drawPath(_oval(22, 33, 6, 8), _fill(AppColors.ink));
+        canvas.drawPath(_oval(42, 33, 6, 8), _fill(AppColors.ink));
         canvas.drawCircle(const Offset(23, 33), 2, _fill(Colors.white));
         canvas.drawCircle(const Offset(41, 33), 2, _fill(Colors.white));
         canvas.drawOval(
           Rect.fromCenter(center: const Offset(32, 43), width: 9, height: 6),
-          _fill(_ink),
+          _fill(AppColors.ink),
         );
       case Animal.frog:
         _shape(canvas, _oval(32, 40, 25, 18), const Color(0xFF7BD35B));
         for (final x in [20.0, 44.0]) {
           _shape(canvas, _oval(x, 20, 9, 9), const Color(0xFF7BD35B));
           canvas.drawCircle(Offset(x, 20), 5, _fill(Colors.white));
-          canvas.drawCircle(Offset(x, 20), 2.5, _fill(_ink));
+          canvas.drawCircle(Offset(x, 20), 2.5, _fill(AppColors.ink));
         }
         canvas.drawPath(
           Path()
@@ -136,16 +136,16 @@ class _AnimalPainter extends CustomPainter {
             ..quadraticBezierTo(32, 54, 44, 42),
           _line,
         );
-        canvas.drawCircle(const Offset(28, 36), 1.4, _fill(_ink));
-        canvas.drawCircle(const Offset(36, 36), 1.4, _fill(_ink));
+        canvas.drawCircle(const Offset(28, 36), 1.4, _fill(AppColors.ink));
+        canvas.drawCircle(const Offset(36, 36), 1.4, _fill(AppColors.ink));
       case Animal.pig:
         _shape(canvas, _tri(const Offset(12, 26), const Offset(14, 6), const Offset(28, 17)), const Color(0xFFFF8FAE));
         _shape(canvas, _tri(const Offset(52, 26), const Offset(50, 6), const Offset(36, 17)), const Color(0xFFFF8FAE));
         _shape(canvas, _oval(32, 36, 23, 21), const Color(0xFFFFA9C2));
         _eyes(canvas, y: 30);
         _shape(canvas, _oval(32, 42, 11, 8), const Color(0xFFFF7A9F));
-        canvas.drawCircle(const Offset(28, 42), 1.8, _fill(_ink));
-        canvas.drawCircle(const Offset(36, 42), 1.8, _fill(_ink));
+        canvas.drawCircle(const Offset(28, 42), 1.8, _fill(AppColors.ink));
+        canvas.drawCircle(const Offset(36, 42), 1.8, _fill(AppColors.ink));
     }
   }
 
