@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/widgets.dart';
 
 import '../settings/app_settings.dart';
+import 'audio_setup.dart';
 
 /// Looping background music for the whole app. Follows the music switch in
 /// the settings and pauses while the app is in the background.
@@ -25,7 +26,7 @@ class MusicService with WidgetsBindingObserver {
   // gap on iOS (it seeks back to the start), so the next lap is started on
   // the other player while the current one fades out.
   final List<AudioPlayer> _players = [AudioPlayer(), AudioPlayer()];
-  final List<StreamSubscription<Duration>> _subscriptions = [];
+  final List<StreamSubscription<void>> _subscriptions = [];
   Duration? _length;
   int _current = 0;
   bool _handingOver = false;
@@ -43,25 +44,24 @@ class MusicService with WidgetsBindingObserver {
     try {
       for (var i = 0; i < _players.length; i++) {
         final player = _players[i];
+        await prepareMixingPlayer(player);
         await player.setReleaseMode(ReleaseMode.stop);
         await player.setVolume(0);
-        _subscriptions.add(player.onPositionChanged.listen((p) => _onPosition(i, p)));
+        _subscriptions.addAll([
+          player.onPositionChanged.listen((p) => _onPosition(i, p)),
+          // Some devices only report the length once playback has started.
+          player.onDurationChanged.listen((d) {
+            if (d > _crossfade * 2) _length = d;
+          }),
+          // Safety net: if the lap ended before a handover could start (length
+          // unknown), start the next lap right away instead of going silent.
+          player.onPlayerComplete.listen((_) => _onComplete(i)),
+        ]);
       }
-      _length = await _measureLength();
       _wasMuted = _muted;
       if (!_muted) await _begin();
     } catch (_) {
       // Music is a nicety: never let an audio problem break the app.
-    }
-  }
-
-  Future<Duration?> _measureLength() async {
-    final probe = AudioPlayer();
-    try {
-      await probe.setSource(AssetSource(_asset));
-      return await probe.getDuration();
-    } finally {
-      await probe.dispose();
     }
   }
 
@@ -70,6 +70,12 @@ class MusicService with WidgetsBindingObserver {
     final player = _players[_current];
     await player.setVolume(_volume);
     await player.play(AssetSource(_asset));
+  }
+
+  void _onComplete(int index) {
+    if (_muted || index != _current || _handingOver) return;
+    _handingOver = true;
+    _handOver();
   }
 
   void _onPosition(int index, Duration position) {

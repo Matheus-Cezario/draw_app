@@ -87,7 +87,6 @@ const _tools = <_ToolInfo>[
   _ToolInfo(ToolType.line, 'Line'),
   _ToolInfo(ToolType.rectangle, 'Square'),
   _ToolInfo(ToolType.ellipse, 'Circle'),
-  _ToolInfo(ToolType.text, 'Text'),
   _ToolInfo(ToolType.selection, 'Move'),
 ];
 
