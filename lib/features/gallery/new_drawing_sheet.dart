@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/ui/kid_ui.dart';
 import '../../core/ui/app_colors.dart';
+import '../../core/audio/sfx_service.dart';
 
 enum NewChoice { book, blank, gallery, camera }
 
@@ -77,7 +78,7 @@ class _BookTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: withTapSound(onTap),
       child: Container(
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
         decoration: BoxDecoration(
@@ -123,7 +124,7 @@ class _OptionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: withTapSound(onTap),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(

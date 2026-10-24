@@ -9,6 +9,7 @@ import '../../core/storage/project_repository.dart';
 import '../../core/ui/kid_ui.dart';
 import '../editor/editor_page.dart';
 import '../../core/ui/app_colors.dart';
+import '../../core/audio/sfx_service.dart';
 
 /// Colour and icon of each category header.
 ({Color color, IconData icon}) _style(DrawingCategory c) => switch (c) {
@@ -184,7 +185,7 @@ class _DrawingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: withTapSound(onTap),
       child: Container(
         width: 158,
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 6),

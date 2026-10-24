@@ -13,6 +13,7 @@ import 'editor_toolbars.dart';
 import 'layers_sheet.dart';
 import 'rename_dialog.dart';
 import '../../core/ui/app_colors.dart';
+import '../../core/audio/sfx_service.dart';
 
 /// Hosts the [EditorController] and lays out the editor chrome.
 class EditorPage extends StatelessWidget {
@@ -227,7 +228,7 @@ class _RoundAction extends StatelessWidget {
       child: Tooltip(
         message: tooltip,
         child: GestureDetector(
-          onTap: onTap,
+          onTap: withTapSound(onTap),
           child: Container(
             width: 37,
             height: 37,

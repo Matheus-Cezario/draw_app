@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import '../../core/ui/app_colors.dart';
+import '../../core/audio/sfx_service.dart';
 
 
 /// A button that looks hand drawn: wobbly double outline, offset "pencil"
@@ -40,7 +41,7 @@ class _SketchButtonState extends State<SketchButton> {
         onTapDown: (_) => setState(() => _pressed = true),
         onTapCancel: () => setState(() => _pressed = false),
         onTapUp: (_) => setState(() => _pressed = false),
-        onTap: widget.onTap,
+        onTap: withTapSound(widget.onTap),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 80),
           transform: Matrix4.translationValues(0, _pressed ? 4 : 0, 0),

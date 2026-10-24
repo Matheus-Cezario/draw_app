@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/storage/project_repository.dart';
 import 'animal_magnet.dart';
 import '../../core/ui/app_colors.dart';
+import '../../core/audio/sfx_service.dart';
 
 
 /// A drawing shown as a sheet of paper held to the board by an animal magnet.
@@ -26,7 +27,7 @@ class PaperCard extends StatelessWidget {
     return Transform.rotate(
       angle: tiltFor(project.id),
       child: GestureDetector(
-        onTap: onTap,
+        onTap: withTapSound(onTap),
         onLongPress: onLongPress,
         child: Stack(
           clipBehavior: Clip.none,
@@ -90,7 +91,7 @@ class PaperCard extends StatelessWidget {
               child: Tooltip(
                 message: 'Delete',
                 child: GestureDetector(
-                  onTap: onDelete,
+                  onTap: withTapSound(onDelete),
                   child: Container(
                     width: 34,
                     height: 34,

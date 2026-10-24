@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import '../audio/sfx_service.dart';
 
 
 TextStyle kidText(double size, {double weight = 600, Color color = AppColors.ink}) =>
@@ -30,7 +31,7 @@ class StickerChoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: withTapSound(onTap),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 120),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -80,7 +81,7 @@ class RoundSticker extends StatelessWidget {
     return Tooltip(
       message: tooltip ?? '',
       child: GestureDetector(
-        onTap: onTap,
+        onTap: withTapSound(onTap),
         child: Container(
           width: size,
           height: size,

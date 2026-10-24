@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/audio/sfx_service.dart';
 import '../../core/storage/project_repository.dart';
+import '../../core/ui/kid_ui.dart';
 import '../editor/editor_page.dart';
 import '../editor/rename_dialog.dart';
 import '../scan_preview/scan_preview_page.dart';
+import '../settings/settings_page.dart';
 import '../library/library_page.dart';
 import 'new_drawing_sheet.dart';
 import 'paper_card.dart';
@@ -164,12 +167,26 @@ class _GalleryPageState extends State<GalleryPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: RoundSticker(
+              icon: Icons.settings_rounded,
+              color: AppColors.appBar,
+              tooltip: 'Settings',
+              onTap: withTapSound(() => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsPage()),
+              )),
+            ),
+          ),
+        ],
         title: const Text(
           'My drawings',
           style: TextStyle(
             fontFamily: 'Fredoka',
             fontSize: 32,
-            color: AppColors.ink,
+            color: AppColors.cream,
             fontVariations: [FontVariation('wght', 700)],
           ),
         ),

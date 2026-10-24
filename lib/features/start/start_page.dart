@@ -4,6 +4,7 @@ import '../../core/storage/project_repository.dart';
 import '../gallery/gallery_page.dart';
 import 'start_scene.dart';
 import '../../core/ui/app_colors.dart';
+import '../../core/audio/sfx_service.dart';
 
 /// First screen: a half-painted picture, the app name on a cloud and one big
 /// round Play button.
@@ -156,7 +157,7 @@ class _PlayButton extends StatelessWidget {
         onTapDown: (_) => onPressedChanged(true),
         onTapCancel: () => onPressedChanged(false),
         onTapUp: (_) => onPressedChanged(false),
-        onTap: onTap,
+        onTap: withTapSound(onTap),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 80),
           transform: Matrix4.translationValues(0, pressed ? 6 : 0, 0),

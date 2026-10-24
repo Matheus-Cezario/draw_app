@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'editor_controller.dart';
 import 'tool_icons.dart';
 import '../../core/ui/app_colors.dart';
+import '../../core/audio/sfx_service.dart';
 
 /// Brush sizes offered to the child (document pixels).
 const List<double> kSizes = [8, 22, 44, 80];
@@ -29,7 +30,7 @@ class ColorBar extends StatelessWidget {
     Widget dot(Color swatch) {
       final selected = swatch == c.color;
       return GestureDetector(
-        onTap: () => c.setColor(swatch),
+        onTap: withTapSound(() => c.setColor(swatch)),
         child: Center(
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 120),
@@ -187,7 +188,7 @@ class _SizeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final dot = 8 + size / 80 * 26; // 8..34 px preview, in the chosen colour
     return GestureDetector(
-      onTap: onTap,
+      onTap: withTapSound(onTap),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 120),
         width: 48,
@@ -231,7 +232,7 @@ class _ToolButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: withTapSound(onTap),
       child: AnimatedScale(
         scale: selected ? 1.08 : 1,
         duration: const Duration(milliseconds: 120),
