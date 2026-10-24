@@ -103,3 +103,21 @@ Bem-vindo ao Color Fun, a nossa primeira versão!
 - Pincel, lápis, borracha, formas, texto, camadas e desfazer
 - Seus desenhos salvos em folhas de papel com ímãs de bichinhos
 Sem anúncios. Sem precisar de internet. Divirta-se!
+
+## Release notes 1.1.0 (limit 500 characters per language)
+
+**English (en-US):**
+New in this version:
+- Background music, with a Settings screen to turn the music and the button sounds on or off separately
+- Turn your picture before you scan it
+- A trash button on every drawing to delete it
+- A fresh, brighter set of colors
+No ads. No internet needed. Have fun!
+
+**Português (pt-BR):**
+Novidades desta versão:
+- Música de fundo, com uma tela de Configurações para ligar e desligar separadamente a música e os sons dos botões
+- Gire a foto antes de escanear
+- Botão de lixeira em cada desenho para apagá-lo
+- Um novo conjunto de cores, mais vivas
+Sem anúncios. Sem precisar de internet. Divirta-se!
