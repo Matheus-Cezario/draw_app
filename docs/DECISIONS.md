@@ -79,3 +79,11 @@ Adding a page means writing one function and one catalog line.
 
 ## D23. Categories on one screen
 The "Colouring book" screen shows one row per category (coloured header, horizontally scrolling paper cards) instead of tabs, so a child sees everything by scrolling in one direction and each category is recognisable by colour and icon.
+
+## D24. Free plan with ads, Plus subscription through Google Play
+Free: up to 3 drawings at the same time, no PNG export, banner and occasional interstitial ads. Subscribers ("Color Fun Plus", `premium_monthly` / `premium_yearly`): everything, no ads. Android only for now.
+- **Identity is the Play purchase token**; the app has no accounts. After a purchase or restore the app sends the token to a separate, generic backend (`subs-backend` repo, Cloud Run + Firestore) that validates it with the Play Developer API, acknowledges it and answers `{active, entitlements, expiresAt}`. The same backend serves other apps: each app is a Firestore document mapping product ids to entitlements.
+- `EntitlementService` (`lib/core/billing/`) caches the last answer and keeps premium for 3 days past the known expiry when the backend is unreachable, so a subscriber is never locked out by bad connectivity. A definite "inactive" answer revokes at once.
+- The limits are plain functions in `plan_limits.dart`. The drawing limit is checked in one place, the gallery's "New" sheet, because every way of creating a drawing starts there. Deleting drawings frees slots; someone who already has more than 3 keeps them but cannot add more.
+- The app is for children: ads use `AgeRestrictedTreatment.child`, rating G and non-personalised requests, and the `AD_ID` permission is removed from the manifest. Ads are never shown while drawing; the interstitial appears only when returning to the gallery, every third time.
+- Build-time config (`--dart-define`): `SUBS_API_URL`, `ADMOB_BANNER_ID`, `ADMOB_INTERSTITIAL_ID`. Defaults are Google's test ad ids. The AdMob app id in `AndroidManifest.xml` is also the test id and must be replaced before publishing.

@@ -5,8 +5,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/billing/entitlement_service.dart';
+import '../../core/billing/plan_limits.dart';
 import '../../core/document/document.dart';
 import '../../core/storage/project_repository.dart';
+import '../paywall/paywall_page.dart';
 import 'canvas_view.dart';
 import 'editor_controller.dart';
 import 'editor_toolbars.dart';
@@ -75,6 +78,13 @@ class _EditorScaffoldState extends State<_EditorScaffold> {
   }
 
   Future<void> _export() async {
+    if (!canExportPng(isPremium: EntitlementService.instance.isPremium)) {
+      final subscribed = await PaywallPage.show(
+        context,
+        reason: 'Exporting your art as PNG is a Plus feature.',
+      );
+      if (!subscribed || !mounted) return;
+    }
     final bytes = await _controller.exportPng();
     final dir = await getTemporaryDirectory();
     final file = File('${dir.path}/${_controller.name}.png');

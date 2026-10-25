@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/ads/ad_banner.dart';
 import '../../core/audio/sfx_service.dart';
+import '../../core/ads/ad_service.dart';
+import '../../core/billing/entitlement_service.dart';
+import '../../core/billing/plan_limits.dart';
 import '../../core/storage/project_repository.dart';
 import '../../core/ui/kid_ui.dart';
 import '../editor/editor_page.dart';
 import '../editor/rename_dialog.dart';
+import '../paywall/paywall_page.dart';
 import '../scan_preview/scan_preview_page.dart';
 import '../settings/settings_page.dart';
 import '../library/library_page.dart';
@@ -44,6 +49,7 @@ class _GalleryPageState extends State<GalleryPage> {
         builder: (_) => EditorPage(document: doc, repository: widget.repository),
       ),
     );
+    AdService.instance.onDrawingClosed();
     _reload();
   }
 
@@ -139,6 +145,20 @@ class _GalleryPageState extends State<GalleryPage> {
   }
 
   Future<void> _showNewSheet() async {
+    // Every way of creating a drawing starts here, so this is the one gate.
+    final allowed = canCreateDrawing(
+      isPremium: EntitlementService.instance.isPremium,
+      drawingCount: await widget.repository.count(),
+    );
+    if (!mounted) return;
+    if (!allowed) {
+      await PaywallPage.show(
+        context,
+        reason: 'The free plan keeps up to $freeDrawingLimit drawings. '
+            'Delete one or get Plus!',
+      );
+      return;
+    }
     final choice = await showNewDrawingSheet(context);
     if (!mounted) return;
     switch (choice) {
@@ -193,6 +213,7 @@ class _GalleryPageState extends State<GalleryPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: SketchButton(label: 'New', onTap: _showNewSheet),
+      bottomNavigationBar: const SafeArea(child: AdBanner()),
       body: FutureBuilder<List<ProjectSummary>>(
         future: _projects,
         builder: (context, snapshot) {

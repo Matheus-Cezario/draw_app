@@ -66,6 +66,17 @@ class ProjectRepository {
     return result;
   }
 
+  /// How many projects exist, without reading their thumbnails.
+  Future<int> count() async {
+    var total = 0;
+    await for (final entity in (await _root()).list()) {
+      if (entity is Directory && await File('${entity.path}/meta.json').exists()) {
+        total++;
+      }
+    }
+    return total;
+  }
+
   /// Creates a blank project, or a scanned one when [scan] is given.
   Future<DrawDocument> create({
     required String name,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/billing/entitlement_service.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/ui/app_colors.dart';
 import '../../core/ui/kid_ui.dart';
+import '../paywall/paywall_page.dart';
 
 /// Switches for the music and the button sounds, each on its own.
 class SettingsPage extends StatelessWidget {
@@ -47,6 +49,25 @@ class SettingsPage extends StatelessWidget {
               label: 'Button sounds',
               on: settings.sfxOn,
               onChanged: settings.setSfxOn,
+            ),
+            const SizedBox(height: 16),
+            ListenableBuilder(
+              listenable: EntitlementService.instance,
+              builder: (context, _) {
+                final premium = EntitlementService.instance.isPremium;
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    StickerChoice(
+                      label: premium ? 'Color Fun Plus: active' : 'Get Color Fun Plus',
+                      selected: premium,
+                      color: AppColors.go,
+                      icon: Icons.star_rounded,
+                      onTap: () => PaywallPage.show(context),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),

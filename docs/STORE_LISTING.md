@@ -39,7 +39,7 @@ MY DRAWINGS
 All your pictures are saved automatically on pretty paper cards held up by animal magnets. Rename them, delete them, or share them as a picture.
 
 PRIVATE AND SAFE
-No ads, no accounts, no tracking and no internet needed. Your drawings and photos never leave your device.
+No accounts and no tracking. Your drawings and photos never leave your device. Free with family-friendly ads; Color Fun Plus removes ads and unlocks unlimited drawings and PNG export.
 
 Download Color Fun and let the fun begin!
 
@@ -80,7 +80,7 @@ MEUS DESENHOS
 Todos os desenhos são salvos automaticamente em folhas de papel presas por ímãs de bichinhos. Renomeie, apague ou compartilhe como imagem.
 
 PRIVADO E SEGURO
-Sem anúncios, sem contas, sem rastreamento e sem precisar de internet. Seus desenhos e fotos nunca saem do aparelho.
+Sem contas e sem rastreamento. Seus desenhos e fotos nunca saem do aparelho. Grátis com anúncios para toda a família; o Color Fun Plus remove os anúncios e libera desenhos ilimitados e exportação em PNG.
 
 Baixe o Color Fun e vamos nos divertir!
 
