@@ -10,7 +10,9 @@ import '../../core/ui/app_colors.dart';
 /// Draws the document and turns pointer events into tool calls.
 ///
 /// One finger (or a stylus/mouse) draws; two fingers pan and zoom; the mouse
-/// wheel zooms on desktop.
+/// wheel zooms on desktop. While a stroke is being drawn, other touches (such
+/// as a resting palm) are ignored, so they can neither cancel it nor move the
+/// paper.
 class CanvasView extends StatefulWidget {
   const CanvasView({super.key, required this.controller});
 
@@ -21,11 +23,24 @@ class CanvasView extends StatefulWidget {
 }
 
 class _CanvasViewState extends State<CanvasView> {
+  /// Pointers that are panning/zooming the paper (never the drawing one).
   final Map<int, Offset> _pointers = {};
+
+  /// Pointers ignored until they lift: a palm resting on the screen while a
+  /// stroke is being drawn. They can neither draw nor move the paper.
+  final Set<int> _ignored = {};
   double _scale = 1;
   Offset _offset = Offset.zero;
   Size? _fittedFor;
-  bool _drawing = false;
+
+  /// The pointer making the current stroke, or null when none is.
+  int? _drawingPointer;
+  Duration _strokeStart = Duration.zero;
+
+  /// A second finger that lands this soon after the first is a pinch, not a
+  /// palm: the tiny stroke is dropped and the paper is moved instead. Later
+  /// than this, the stroke is locked and extra touches are ignored.
+  static const Duration _pinchWindow = Duration(milliseconds: 120);
 
   EditorController get _c => widget.controller;
 
@@ -43,24 +58,39 @@ class _CanvasViewState extends State<CanvasView> {
   Offset _toDoc(Offset local) => (local - _offset) / _scale;
 
   void _down(PointerDownEvent e) {
+    if (_drawingPointer != null) {
+      if (e.timeStamp - _strokeStart > _pinchWindow) {
+        // Mid-stroke: a hand resting on the screen must not touch the paper.
+        _ignored.add(e.pointer);
+        return;
+      }
+      // Two fingers almost together: this is a pan/zoom, not a stroke.
+      _drawingPointer = null;
+      _c.tool.onCancel();
+      _pointers[e.pointer] = e.localPosition;
+      return;
+    }
     _pointers[e.pointer] = e.localPosition;
     if (_pointers.length == 1) {
-      _drawing = true;
+      _drawingPointer = e.pointer;
+      _strokeStart = e.timeStamp;
       _c.tool.onDown(_toDoc(e.localPosition));
-    } else if (_drawing) {
-      // A second finger landed: this is a pan/zoom, not a stroke.
-      _drawing = false;
-      _c.tool.onCancel();
     }
   }
 
   void _move(PointerMoveEvent e) {
+    if (_ignored.contains(e.pointer)) return;
+    if (_drawingPointer != null) {
+      if (e.pointer == _drawingPointer) {
+        _pointers[e.pointer] = e.localPosition;
+        _c.tool.onMove(_toDoc(e.localPosition));
+      }
+      return;
+    }
     final previous = Map<int, Offset>.of(_pointers);
     if (!_pointers.containsKey(e.pointer)) return;
     _pointers[e.pointer] = e.localPosition;
-    if (_drawing && _pointers.length == 1) {
-      _c.tool.onMove(_toDoc(e.localPosition));
-    } else if (_pointers.length >= 2) {
+    if (_pointers.length >= 2) {
       final ids = _pointers.keys.take(2).toList();
       final p0 = previous[ids[0]]!, p1 = previous[ids[1]]!;
       final q0 = _pointers[ids[0]]!, q1 = _pointers[ids[1]]!;
@@ -77,17 +107,16 @@ class _CanvasViewState extends State<CanvasView> {
   }
 
   void _up(PointerEvent e) {
-    final wasDrawing = _drawing && _pointers.length == 1;
+    if (_ignored.remove(e.pointer)) return;
     _pointers.remove(e.pointer);
-    if (wasDrawing) {
-      _drawing = false;
+    if (e.pointer == _drawingPointer) {
+      _drawingPointer = null;
       if (e is PointerCancelEvent) {
         _c.tool.onCancel();
       } else {
         _c.tool.onUp();
       }
     }
-    if (_pointers.isEmpty) _drawing = false;
   }
 
   void _signal(PointerSignalEvent e) {
