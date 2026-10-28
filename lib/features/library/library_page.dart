@@ -14,10 +14,17 @@ import '../../core/audio/sfx_service.dart';
 /// Colour and icon of each category header.
 ({Color color, IconData icon}) _style(DrawingCategory c) => switch (c) {
       DrawingCategory.animals => (color: AppColors.categoryAnimals, icon: Icons.pets_rounded),
+      DrawingCategory.dinosaurs => (color: AppColors.categoryDinosaurs, icon: Icons.egg_rounded),
+      DrawingCategory.ocean => (color: AppColors.categoryOcean, icon: Icons.water_rounded),
+      DrawingCategory.forest => (color: AppColors.categoryForest, icon: Icons.park_rounded),
       DrawingCategory.cars => (color: AppColors.categoryCars, icon: Icons.directions_car_rounded),
-      DrawingCategory.motorcycles => (color: AppColors.categoryMotorcycles, icon: Icons.two_wheeler_rounded),
-      DrawingCategory.houses => (color: AppColors.categoryHouses, icon: Icons.home_rounded),
-      DrawingCategory.plants => (color: AppColors.categoryPlants, icon: Icons.local_florist_rounded),
+      DrawingCategory.train => (color: AppColors.categoryTrains, icon: Icons.train_rounded),
+      DrawingCategory.city => (color: AppColors.categoryCity, icon: Icons.location_city_rounded),
+      DrawingCategory.space => (color: AppColors.categorySpace, icon: Icons.rocket_launch_rounded),
+      DrawingCategory.princess => (color: AppColors.categoryPrincesses, icon: Icons.castle_rounded),
+      DrawingCategory.toys => (color: AppColors.categoryToys, icon: Icons.toys_rounded),
+      DrawingCategory.plush => (color: AppColors.categoryPlush, icon: Icons.favorite_rounded),
+      DrawingCategory.food => (color: AppColors.categoryFood, icon: Icons.icecream_rounded),
     };
 
 /// Ready-made drawings, one row per category.
@@ -38,7 +45,7 @@ class _LibraryPageState extends State<LibraryPage> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      final picture = await renderDrawing(drawing);
+      final picture = await loadDrawing(drawing);
       final scan = await _scanner.scan(picture, const ScanParams(gapClosing: 1));
       final doc = await widget.repository.create(name: drawing.name, scan: scan);
       if (!mounted) return;
@@ -158,7 +165,7 @@ class _Section extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 210,
+            height: 250,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -198,15 +205,21 @@ class _DrawingCard extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: AspectRatio(
-                aspectRatio: 1,
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.hairlineSoft),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.hairlineSoft),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(7),
+                  child: Image.asset(
+                    drawing.asset,
+                    fit: BoxFit.contain,
+                    cacheWidth: 320,
+                    filterQuality: FilterQuality.medium,
+                    gaplessPlayback: true,
                   ),
-                  child: CustomPaint(painter: _ThumbPainter(drawing)),
                 ),
               ),
             ),
@@ -222,23 +235,4 @@ class _DrawingCard extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ThumbPainter extends CustomPainter {
-  const _ThumbPainter(this.drawing);
-
-  final Drawing drawing;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final side = size.shortestSide;
-    canvas.save();
-    canvas.translate((size.width - side) / 2, (size.height - side) / 2);
-    canvas.clipRect(Rect.fromLTWH(0, 0, side, side));
-    drawing.paintLines(canvas, Size(side, side));
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(_ThumbPainter old) => old.drawing != drawing;
 }

@@ -77,10 +77,17 @@ abstract final class AppColors {
 
   // Colouring book categories
   static const Color categoryAnimals = ChinesePalette.orange;
+  static const Color categoryDinosaurs = ChinesePalette.ufoGreen;
+  static const Color categoryOcean = ChinesePalette.clearChill;
+  static const Color categoryForest = ChinesePalette.limeSoap;
   static const Color categoryCars = ChinesePalette.watermelon;
-  static const Color categoryMotorcycles = ChinesePalette.saturatedSky;
-  static const Color categoryHouses = ChinesePalette.ufoGreen;
-  static const Color categoryPlants = ChinesePalette.wildWatermelon;
+  static const Color categoryTrains = ChinesePalette.saturatedSky;
+  static const Color categoryCity = ChinesePalette.peace;
+  static const Color categorySpace = ChinesePalette.brightGreek;
+  static const Color categoryPrincesses = ChinesePalette.wildWatermelon;
+  static const Color categoryToys = ChinesePalette.goldenSand;
+  static const Color categoryPlush = ChinesePalette.coral;
+  static const Color categoryFood = ChinesePalette.bruschettaTomato;
 
   // Tool tiles in the editor
   static const Color toolBrush = ChinesePalette.orange;

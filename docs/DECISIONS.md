@@ -70,12 +70,11 @@ A native cropper package would need per-platform setup and would not match the p
 ## D21. App name: Color Fun
 Short, easy for children to say and spell, and it works in English and Portuguese. Changed in the app title, the start screen, the iOS display name, the Android label and the web manifest. The application id and iOS bundle id are now `com.mcezario.colorfun`. Android release builds are signed with a private upload key kept outside the repo (`~/.android-keys/colorfun/`, referenced by the git-ignored `android/key.properties`); without that file the build falls back to the debug key.
 
-## D22. Ready-made drawings are vectors drawn in code
-20 pages in 5 categories (animals, cars, motorbikes, houses, plants) live in `lib/core/library/`. They are drawn with a tiny `Pen` helper (100 x 100 units; each shape is filled white, then outlined, so later shapes hide earlier lines). Why code and not image files:
-- Outlines are *closed by construction*, which is exactly what the region-based bucket needs; a test checks every drawing scans into closed regions and does not leak.
-- No binary assets: the repo stays small, drawings are crisp at any size, and the same drawing paints the gallery thumbnails live.
-- A page is rasterised (1200 px) and goes through the very same scan as a photo, so there is one code path.
-Adding a page means writing one function and one catalog line.
+## D22. Ready-made drawings are generated pictures, bundled as grey-scale PNGs
+(Replaces the first version, which drew 20 vector pages in code with a `Pen` helper.) The colouring book has 12 categories (animals, dinosaurs, ocean, forest, cars, trains, city, space, princesses, toys, plush toys, food), 10 pages each. The pictures are made with Gemini (black outlines on white, no colour, closed shapes) and live as sources in `assets/draw_lib/<category>/NN_name.png`, which is not bundled.
+- `tools/build_library.py` turns them into what the app ships: `assets/library/<category>/NN_name.png` (grey-scale, long side 1280 px, a levels curve removes paper noise, 16 grey levels, about 50 kB each), the generated `lib/core/library/catalog.dart` and the asset folders in `pubspec.yaml`. Display names (English) come from `tools/library_names.json`. Run it again after adding or changing pictures.
+- A page is loaded from the bundle and goes through the very same scan as a photo (`loadDrawing` -> `ScanService.decode` -> `scanLineArt`), so there is one code path. `test/library_test.dart` scans every page and fails if the outlines leak.
+- Why PNGs now: the vector pages looked like hand-made shapes, and cute, varied pages are much cheaper to produce with an image model than to write as code. The cost is binary assets (about 6 MB for 115 pages) instead of a small repo.
 
 ## D23. Categories on one screen
 The "Colouring book" screen shows one row per category (coloured header, horizontally scrolling paper cards) instead of tabs, so a child sees everything by scrolling in one direction and each category is recognisable by colour and icon.

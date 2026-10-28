@@ -1,32 +1,32 @@
-import 'dart:ui';
-
-import 'pen.dart';
-
+/// The sections of the colouring book. Each value is named after its folder in
+/// `assets/library` (see tools/build_library.py).
 enum DrawingCategory {
   animals('Animals'),
+  dinosaurs('Dinosaurs'),
+  ocean('Ocean'),
+  forest('Forest'),
   cars('Cars'),
-  motorcycles('Motorbikes'),
-  houses('Houses'),
-  plants('Plants');
+  train('Trains'),
+  city('City'),
+  space('Space'),
+  princess('Princesses'),
+  toys('Toys'),
+  plush('Plush toys'),
+  food('Food');
 
   const DrawingCategory(this.label);
   final String label;
 }
 
-/// A ready-made colouring page, drawn in code as clean closed outlines.
+/// A ready-made colouring page: black outlines on white, shipped as a PNG.
 class Drawing {
-  const Drawing(this.id, this.name, this.category, this._draw);
+  const Drawing(this.id, this.name, this.category, this.asset);
 
+  /// `<category>/<file name without extension>`, unique.
   final String id;
   final String name;
   final DrawingCategory category;
-  final void Function(Pen pen) _draw;
 
-  /// Paints the line art (black on transparent) to fill [size].
-  void paintLines(Canvas canvas, Size size) {
-    canvas.save();
-    canvas.scale(size.width / 100, size.height / 100);
-    _draw(Pen(canvas));
-    canvas.restore();
-  }
+  /// Path of the PNG in the asset bundle.
+  final String asset;
 }

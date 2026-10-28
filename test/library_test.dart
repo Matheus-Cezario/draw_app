@@ -11,12 +11,14 @@ void main() {
     }
     final ids = kDrawings.map((d) => d.id).toSet();
     expect(ids.length, kDrawings.length);
+    expect(kDrawings.map((d) => d.asset).toSet().length, kDrawings.length);
   });
 
-  testWidgets('every drawing scans into paintable closed regions', (tester) async {
+  testWidgets('every drawing loads and scans into paintable closed regions',
+      (tester) async {
     await tester.runAsync(() async {
       for (final drawing in kDrawings) {
-        final picture = await renderDrawing(drawing, side: 600);
+        final picture = await loadDrawing(drawing);
         final scan = scanLineArt(
           picture.rgba,
           picture.width,
@@ -35,5 +37,5 @@ void main() {
         expect(biggest / scan.regions.length, lessThan(0.9), reason: '${drawing.id} leaks');
       }
     });
-  });
+  }, timeout: const Timeout(Duration(minutes: 10)));
 }

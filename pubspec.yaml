@@ -70,6 +70,20 @@ flutter:
   uses-material-design: true
 
   assets:
+    # library-assets:begin
+    - assets/library/animals/
+    - assets/library/dinosaurs/
+    - assets/library/ocean/
+    - assets/library/forest/
+    - assets/library/cars/
+    - assets/library/train/
+    - assets/library/city/
+    - assets/library/space/
+    - assets/library/princess/
+    - assets/library/toys/
+    - assets/library/plush/
+    - assets/library/food/
+    # library-assets:end
     - assets/audio/happy_clappy_loop.wav
     - assets/audio/tap.wav
 
