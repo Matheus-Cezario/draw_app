@@ -121,3 +121,21 @@ Novidades desta versão:
 - Botão de lixeira em cada desenho para apagá-lo
 - Um novo conjunto de cores, mais vivas
 Sem anúncios. Sem precisar de internet. Divirta-se!
+
+## Release notes 1.2.0 (limit 500 characters per language)
+
+**English (en-US):**
+New in this version:
+- A brand new colouring book: 120 pages in 12 categories, like dinosaurs, the ocean, space, princesses, toys and food
+- Easier drawing: a hand resting on the screen no longer moves the paper or erases the line
+- Fixes for the music and the button sounds
+- New Color Fun Plus: unlimited drawings, PNG export and no ads
+The free version keeps up to 3 drawings and shows kid-safe ads.
+
+**Português (pt-BR):**
+Novidades desta versão:
+- Livro de colorir novo: 120 desenhos em 12 categorias, como dinossauros, fundo do mar, espaço, princesas, brinquedos e comidas
+- Desenhar ficou mais fácil: a mão apoiada na tela não mexe mais o papel nem apaga o traço
+- Correções na música e nos sons dos botões
+- Novo Color Fun Plus: desenhos ilimitados, exportação em PNG e sem anúncios
+A versão grátis guarda até 3 desenhos e tem anúncios adequados para crianças.
