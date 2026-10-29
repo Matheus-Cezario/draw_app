@@ -4,6 +4,7 @@ import '../../core/billing/entitlement_service.dart';
 import '../../core/billing/plan_limits.dart';
 import '../../core/ui/app_colors.dart';
 import '../../core/ui/kid_ui.dart';
+import 'parental_gate.dart';
 
 /// Offers the subscription. Closes itself once the user becomes a subscriber.
 class PaywallPage extends StatefulWidget {
@@ -109,7 +110,13 @@ class _PaywallPageState extends State<PaywallPage> {
                     selected: true,
                     color: AppColors.go,
                     icon: Icons.star_rounded,
-                    onTap: service.busy ? () {} : () => service.buy(product),
+                    onTap: service.busy
+                        ? () {}
+                        : () async {
+                            if (await showParentalGate(context)) {
+                              await service.buy(product);
+                            }
+                          },
                   ),
                   const SizedBox(height: 12),
                 ],
