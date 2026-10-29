@@ -47,5 +47,3 @@ app.*.map.json
 # Widget Preview related
 .widget_preview/
 
-# Local drawing sources, not versioned for now
-assets/draw_lib/
