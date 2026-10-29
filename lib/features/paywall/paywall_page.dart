@@ -6,7 +6,7 @@ import '../../core/ui/app_colors.dart';
 import '../../core/ui/kid_ui.dart';
 
 /// Offers the subscription. Closes itself once the user becomes a subscriber.
-class PaywallPage extends StatelessWidget {
+class PaywallPage extends StatefulWidget {
   const PaywallPage({super.key, this.reason});
 
   /// Why the paywall opened, shown on top ("Free plan has 3 drawings").
@@ -22,7 +22,20 @@ class PaywallPage extends StatelessWidget {
   }
 
   @override
+  State<PaywallPage> createState() => _PaywallPageState();
+}
+
+class _PaywallPageState extends State<PaywallPage> {
+  @override
+  void initState() {
+    super.initState();
+    final service = EntitlementService.instance;
+    if (service.products.isEmpty) service.loadProducts();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final reason = widget.reason;
     final service = EntitlementService.instance;
     return ListenableBuilder(
       listenable: service,
@@ -53,7 +66,7 @@ class PaywallPage extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             children: [
               if (reason != null) ...[
-                Text(reason!,
+                Text(reason,
                     textAlign: TextAlign.center, style: kidText(20, weight: 600)),
                 const SizedBox(height: 16),
               ],
@@ -69,10 +82,27 @@ class PaywallPage extends StatelessWidget {
                 style: kidText(15, weight: 500, color: AppColors.disabledText),
               ),
               const SizedBox(height: 20),
-              if (service.products.isEmpty)
+              if (service.products.isEmpty && service.loadingProducts)
+                const Center(child: CircularProgressIndicator(color: AppColors.ink))
+              else if (service.products.isEmpty) ...[
                 Text('Plans are not available right now.',
-                    textAlign: TextAlign.center, style: kidText(18))
-              else
+                    textAlign: TextAlign.center, style: kidText(18)),
+                if (service.productsProblem != null) ...[
+                  const SizedBox(height: 8),
+                  Text(service.productsProblem!,
+                      textAlign: TextAlign.center,
+                      style: kidText(14, weight: 500, color: AppColors.disabledText)),
+                ],
+                const SizedBox(height: 12),
+                Center(
+                  child: StickerChoice(
+                    label: 'Try again',
+                    selected: false,
+                    icon: Icons.refresh_rounded,
+                    onTap: service.loadProducts,
+                  ),
+                ),
+              ] else
                 for (final product in service.products) ...[
                   StickerChoice(
                     label: '${product.title.split(' (').first} · ${product.price}',

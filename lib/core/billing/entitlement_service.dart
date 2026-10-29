@@ -94,6 +94,8 @@ class EntitlementService extends ChangeNotifier {
   List<ProductDetails> _products = const [];
   String? _error;
   bool _busy = false;
+  String? _productsProblem;
+  bool _loadingProducts = false;
 
   bool get isPremium {
     if (!_state.active) return false;
@@ -106,6 +108,10 @@ class EntitlementService extends ChangeNotifier {
   String? get error => _error;
   bool get busy => _busy;
 
+  /// Why [products] is empty, to show in the paywall; null when they loaded.
+  String? get productsProblem => _productsProblem;
+  bool get loadingProducts => _loadingProducts;
+
   @visibleForTesting
   Future<void> loadCache() async {
     _state = await _cache.load();
@@ -114,17 +120,44 @@ class EntitlementService extends ChangeNotifier {
 
   Future<void> init() async {
     await loadCache();
-
-    final iap = InAppPurchase.instance;
-    if (!await iap.isAvailable()) return;
-    _purchases = iap.purchaseStream.listen(
-      _onPurchases,
-      onError: (Object e) => _fail('$e'),
-    );
-    final response = await iap.queryProductDetails(premiumProductIds);
-    _products = response.productDetails;
-    notifyListeners();
+    await loadProducts();
     unawaited(refresh());
+  }
+
+  /// Asks Play for the plans. Called at start and again whenever the paywall
+  /// opens without plans, so plans that were activated later still show up.
+  Future<void> loadProducts() async {
+    if (_loadingProducts) return;
+    _loadingProducts = true;
+    notifyListeners();
+    try {
+      final iap = InAppPurchase.instance;
+      if (!await iap.isAvailable()) {
+        _productsProblem = 'Google Play billing is not available here. '
+            'Install the app from Google Play with a tester account.';
+        return;
+      }
+      _purchases ??= iap.purchaseStream.listen(
+        _onPurchases,
+        onError: (Object e) => _fail('$e'),
+      );
+      final response = await iap.queryProductDetails(premiumProductIds);
+      _products = response.productDetails;
+      if (response.error != null) {
+        _productsProblem = 'Google Play error: ${response.error!.message}';
+      } else if (_products.isEmpty) {
+        _productsProblem = 'Google Play did not find the plans '
+            '${response.notFoundIDs.join(', ')}. Check that they are active '
+            'and that this account is a tester.';
+      } else {
+        _productsProblem = null;
+      }
+    } catch (e) {
+      _productsProblem = 'Could not load the plans: $e';
+    } finally {
+      _loadingProducts = false;
+      notifyListeners();
+    }
   }
 
   /// Re-checks the saved token with the backend. If the backend is
